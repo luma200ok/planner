@@ -36,4 +36,9 @@ public class Task {
         this.title = title;
         this.scheduledDate = scheduledDate;
     }
+
+    public void update(String title, LocalDate scheduledDate) {
+        this.title = title;
+        this.scheduledDate = scheduledDate;
+    }
 }

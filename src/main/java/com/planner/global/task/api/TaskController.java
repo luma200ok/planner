@@ -3,11 +3,15 @@ package com.planner.global.task.api;
 import com.planner.global.task.application.TaskService;
 import com.planner.global.task.application.dto.CreateRequest;
 import com.planner.global.task.application.dto.TaskResponse;
+import com.planner.global.task.application.dto.UpdateRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -36,5 +40,20 @@ public class TaskController {
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
             LocalDate date) {
         return taskService.findByDate(date);
+    }
+
+    @GetMapping("/{id}")
+    public TaskResponse get(@PathVariable Long id) {
+        return taskService.get(id);
+    }
+
+    @PatchMapping("/{id}")
+    public TaskResponse update(@PathVariable Long id, @Valid @RequestBody UpdateRequest req) {
+        return taskService.update(id, req);
+    }
+
+    @DeleteMapping("/{id}")
+    public void delete(@PathVariable Long id) {
+        taskService.delete(id);
     }
 }
