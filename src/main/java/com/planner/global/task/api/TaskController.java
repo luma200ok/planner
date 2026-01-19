@@ -56,4 +56,14 @@ public class TaskController {
     public void delete(@PathVariable Long id) {
         taskService.delete(id);
     }
+
+    @PostMapping("/{id}/complete")
+    public TaskResponse complete(@PathVariable Long id) {
+        return taskService.complete(id);
+    }
+
+    @PostMapping("/{id}/undo")
+    public TaskResponse undo(@PathVariable Long id) {
+        return taskService.undo(id);
+    }
 }

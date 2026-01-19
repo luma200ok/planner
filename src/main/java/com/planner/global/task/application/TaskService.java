@@ -5,12 +5,14 @@ import com.planner.global.task.application.dto.CreateRequest;
 import com.planner.global.task.application.dto.TaskResponse;
 import com.planner.global.task.application.dto.UpdateRequest;
 import com.planner.global.task.domain.Task;
+import com.planner.global.task.domain.TaskStatus;
 import com.planner.global.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -47,7 +49,24 @@ public class TaskService {
     }
 
     public void delete(Long id) {
-        Task task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+        Task task = taskRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
         taskRepository.delete(task);
+    }
+
+    @Transactional
+    public TaskResponse complete(Long id) {
+        Task task = taskRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+        task.complete(LocalDateTime.now());
+        return TaskResponse.from(task);
+    }
+
+    @Transactional
+    public TaskResponse undo(Long id) {
+        Task task = taskRepository.findById(id).orElseThrow(
+                () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+        task.undo();
+        return TaskResponse.from(task);
     }
 }

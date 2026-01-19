@@ -1,7 +1,10 @@
 package com.planner.global.task.domain;
 
+import jakarta.annotation.Nullable;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -13,10 +16,12 @@ import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "tasks", indexes = {
-        @Index(name = "idx_tasks_scheduled_date", columnList = "scheduledDate")
+        @Index(name = "idx_tasks_scheduled_date", columnList = "scheduledDate"),
+        @Index(name = "idx_tasks_completed_at", columnList = "completedAt")
 })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
@@ -32,13 +37,36 @@ public class Task {
     @Column(nullable = false)
     private LocalDate scheduledDate;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TaskStatus status;
+
+    private LocalDateTime completedAt;
+
     public Task(String title, LocalDate scheduledDate) {
         this.title = title;
         this.scheduledDate = scheduledDate;
+        this.status = TaskStatus.PLANNED;
     }
 
     public void update(String title, LocalDate scheduledDate) {
         this.title = title;
         this.scheduledDate = scheduledDate;
+    }
+
+    public boolean isDone() {
+        return this.status == TaskStatus.DONE;
+    }
+
+    public void complete(LocalDateTime now) {
+        if (isDone()) return;
+        this.status = TaskStatus.DONE;
+        this.completedAt = now;
+    }
+
+    public void undo() {
+        if (!isDone()) return;
+        this.status = TaskStatus.PLANNED;
+        this.completedAt = null;
     }
 }
