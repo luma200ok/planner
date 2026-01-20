@@ -2,8 +2,10 @@ package com.planner.task.api;
 
 import com.planner.task.application.TaskService;
 import com.planner.task.application.dto.CreateRequest;
+import com.planner.task.application.dto.SkipRequest;
 import com.planner.task.application.dto.TaskEventResponse;
 import com.planner.task.application.dto.TaskResponse;
+import com.planner.task.application.dto.UndoRequest;
 import com.planner.task.application.dto.UpdateRequest;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -65,12 +67,17 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/undo")
-    public TaskResponse undo(@PathVariable Long id) {
-        return taskService.undo(id);
+    public TaskResponse undo(@PathVariable Long id, @RequestBody(required = false) UndoRequest req) {
+        return taskService.undo(id, req == null ? null : req.reason());
     }
 
     @GetMapping("/{id}/events")
     public List<TaskEventResponse> events(@PathVariable Long id) {
         return taskService.events(id);
+    }
+
+    @PostMapping("/{id}/skip")
+    public TaskResponse skip(@PathVariable Long id, @RequestBody(required = false)SkipRequest req) {
+        return taskService.skip(id, req == null ? null : req.reason());
     }
 }

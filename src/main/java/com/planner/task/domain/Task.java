@@ -67,4 +67,11 @@ public class Task {
         this.status = TaskStatus.PLANNED;
         this.completedAt = null;
     }
+
+    public void skip(LocalDateTime now) {
+        if (this.status == TaskStatus.DONE) return;
+        if (this.status == TaskStatus.SKIPPED) return;
+        this.status = TaskStatus.SKIPPED;
+        this.completedAt = now;
+    }
 }

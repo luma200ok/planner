@@ -6,11 +6,13 @@ import com.planner.task.application.dto.TaskEventResponse;
 import com.planner.task.application.dto.TaskResponse;
 import com.planner.task.application.dto.UpdateRequest;
 import com.planner.task.domain.Task;
+import com.planner.task.domain.TaskStatus;
 import com.planner.task.event.TaskEvent;
 import com.planner.task.event.TaskEventType;
 import com.planner.task.repository.TaskEventRepository;
 import com.planner.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,9 +93,14 @@ public class TaskService {
         return TaskResponse.from(task);
     }
 
-    public TaskResponse undo(Long id) {
+    public TaskResponse undo(Long id, String reason) {
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+
+        if (!task.isDone()) {
+            return TaskResponse.from(task);
+        }
+
         var now = LocalDateTime.now();
         task.undo();
 
@@ -102,7 +109,7 @@ public class TaskService {
                 TaskEventType.UNDO,
                 now,
                 null,
-                null
+                reason
         ));
 
         return TaskResponse.from(task);
@@ -112,5 +119,24 @@ public class TaskService {
     public List<TaskEventResponse> events(Long taskId) {
         return taskEventRepository.findByTaskIdOrderByOccurredAtDesc(taskId).stream()
                 .map(TaskEventResponse::from).toList();
+    }
+
+    public TaskResponse skip(Long id, String reason) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("task가 없습니다. id = " + id));
+        if (task.getStatus() == TaskStatus.DONE || task.getStatus() == TaskStatus.SKIPPED) {
+            return TaskResponse.from(task);
+        }
+
+        var now = LocalDateTime.now();
+        task.skip(now);
+
+        taskEventRepository.save(TaskEvent.of(
+                task.getId(),
+                TaskEventType.SKIP,
+                now,
+                null,
+                reason
+        ));
+        return TaskResponse.from(task);
     }
 }
