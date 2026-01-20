@@ -41,9 +41,8 @@ public class TaskService {
     }
 
     @Transactional(readOnly = true)
-    public List<TaskResponse> findByDate(LocalDate date) {
-        return taskRepository.findAllByScheduledDateOrderByIdDesc(date)
-                .stream().map(TaskResponse::from).toList();
+    public List<TaskResponse> search(LocalDate from, LocalDate to, TaskStatus status) {
+        return taskRepository.search(from, to, status).stream().map(TaskResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
@@ -139,4 +138,5 @@ public class TaskService {
         ));
         return TaskResponse.from(task);
     }
+
 }

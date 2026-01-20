@@ -7,6 +7,7 @@ import com.planner.task.application.dto.TaskEventResponse;
 import com.planner.task.application.dto.TaskResponse;
 import com.planner.task.application.dto.UndoRequest;
 import com.planner.task.application.dto.UpdateRequest;
+import com.planner.task.domain.TaskStatus;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -39,11 +40,13 @@ public class TaskController {
     }
 
     @GetMapping
-    public List<TaskResponse> list(
-            @RequestParam
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE)
-            LocalDate date) {
-        return taskService.findByDate(date);
+    public List<TaskResponse> search(
+            @RequestParam(required = false) LocalDate from,
+            @RequestParam(required = false) LocalDate to,
+            @RequestParam(required = false) TaskStatus status
+            ) {
+
+        return taskService.search(from, to, status);
     }
 
     @GetMapping("/{id}")

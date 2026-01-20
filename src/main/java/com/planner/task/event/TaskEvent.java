@@ -14,12 +14,11 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "task_events", indexes = {
-        @Index(name = "idx+task_events_task_id", columnList = "taskId"),
+        @Index(name = "idx_task_events_task_id", columnList = "taskId"),
         @Index(name = "idx_task_events_occurred_at", columnList = "occurredAt")
         },
         uniqueConstraints ={
