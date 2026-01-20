@@ -11,6 +11,7 @@ import com.planner.task.event.TaskEventType;
 import com.planner.task.repository.TaskEventRepository;
 import com.planner.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,20 +64,30 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    public TaskResponse complete(Long id) {
+    public TaskResponse complete(Long id, String idempotencyKey) {
+        TaskEvent existed = taskEventRepository.findByIdempotencyKey(idempotencyKey).orElse(null);
+
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+
+        if (existed != null) {
+            return TaskResponse.from(task); // 이미 처리된 요청 -> 현재 task로 반환
+        }
+
+        // 처리 로직
         var now = LocalDateTime.now();
         task.complete(now);
-
-        taskEventRepository.save(TaskEvent.of(
-                task.getId(),
-                TaskEventType.COMPLETE,
-                now,
-                null,
-                null
-        ));
-
+        try {
+            taskEventRepository.save(TaskEvent.of(
+                    task.getId(),
+                    TaskEventType.COMPLETE,
+                    now,
+                    idempotencyKey,
+                    null
+            ));
+        } catch (DataIntegrityViolationException e) {
+            return TaskResponse.from(task);
+        }
         return TaskResponse.from(task);
     }
 

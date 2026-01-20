@@ -9,6 +9,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
+import jakarta.persistence.UniqueConstraint;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,7 +21,10 @@ import java.time.LocalDateTime;
 @Table(name = "task_events", indexes = {
         @Index(name = "idx+task_events_task_id", columnList = "taskId"),
         @Index(name = "idx_task_events_occurred_at", columnList = "occurredAt")
-})
+        },
+        uniqueConstraints ={
+        @UniqueConstraint(name = "uk_task_events_idempotency_key", columnNames = "idempotencyKey")
+        })
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class TaskEvent {
