@@ -1,17 +1,14 @@
 package com.planner.task.api;
 
 import com.planner.task.application.TaskService;
-import com.planner.task.application.dto.CreateRequest;
-import com.planner.task.application.dto.SkipRequest;
-import com.planner.task.application.dto.TaskEventResponse;
-import com.planner.task.application.dto.TaskResponse;
-import com.planner.task.application.dto.UndoRequest;
-import com.planner.task.application.dto.UpdateRequest;
+import com.planner.task.application.dto.TaskDto.SkipRequest;
+import com.planner.task.application.dto.TaskDto;
+import com.planner.task.application.dto.TaskDto.UndoRequest;
+import com.planner.task.application.dto.TaskDto.UpdateRequest;
 import com.planner.task.domain.TaskStatus;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -35,27 +32,27 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public TaskResponse create(@Valid @RequestBody CreateRequest req) {
+    public TaskDto.TaskResponse create(@Valid @RequestBody TaskDto.CreateRequest req) {
         return taskService.create(req);
     }
 
     @GetMapping
-    public List<TaskResponse> search(
+    public List<TaskDto.TaskResponse> search(
             @RequestParam(required = false) LocalDate from,
             @RequestParam(required = false) LocalDate to,
             @RequestParam(required = false) TaskStatus status
-            ) {
+    ) {
 
         return taskService.search(from, to, status);
     }
 
     @GetMapping("/{id}")
-    public TaskResponse get(@PathVariable Long id) {
+    public TaskDto.TaskResponse get(@PathVariable Long id) {
         return taskService.get(id);
     }
 
     @PatchMapping("/{id}")
-    public TaskResponse update(@PathVariable Long id, @Valid @RequestBody UpdateRequest req) {
+    public TaskDto.TaskResponse update(@PathVariable Long id, @Valid @RequestBody UpdateRequest req) {
         return taskService.update(id, req);
     }
 
@@ -65,22 +62,22 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/complete")
-    public TaskResponse complete(@PathVariable Long id, @RequestHeader("Idempotency-Key") String idempotencyKey) {
+    public TaskDto.TaskResponse complete(@PathVariable Long id, @RequestHeader("Idempotency-Key") String idempotencyKey) {
         return taskService.complete(id, idempotencyKey);
     }
 
     @PostMapping("/{id}/undo")
-    public TaskResponse undo(@PathVariable Long id, @RequestBody(required = false) UndoRequest req) {
+    public TaskDto.TaskResponse undo(@PathVariable Long id, @RequestBody(required = false) UndoRequest req) {
         return taskService.undo(id, req == null ? null : req.reason());
     }
 
     @GetMapping("/{id}/events")
-    public List<TaskEventResponse> events(@PathVariable Long id) {
+    public List<TaskDto.TaskEventResponse> events(@PathVariable Long id) {
         return taskService.events(id);
     }
 
     @PostMapping("/{id}/skip")
-    public TaskResponse skip(@PathVariable Long id, @RequestBody(required = false)SkipRequest req) {
+    public TaskDto.TaskResponse skip(@PathVariable Long id, @RequestBody(required = false) SkipRequest req) {
         return taskService.skip(id, req == null ? null : req.reason());
     }
 }

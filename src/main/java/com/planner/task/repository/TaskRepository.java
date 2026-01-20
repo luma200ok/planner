@@ -9,6 +9,7 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long> {
     List<Task> findAllByScheduledDateOrderByIdDesc(LocalDate scheduledDate);
@@ -24,4 +25,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             @Param("to") LocalDate to,
             @Param("status") TaskStatus status
     );
+
+    Optional<Task> findByTemplateIdAndScheduledDate(Long template_id, LocalDate scheduledDate);
 }

@@ -1,10 +1,7 @@
 package com.planner.task.application;
 
 import com.planner.global.error.exceptiion.NotFoundException;
-import com.planner.task.application.dto.CreateRequest;
-import com.planner.task.application.dto.TaskEventResponse;
-import com.planner.task.application.dto.TaskResponse;
-import com.planner.task.application.dto.UpdateRequest;
+import com.planner.task.application.dto.TaskDto;
 import com.planner.task.domain.Task;
 import com.planner.task.domain.TaskStatus;
 import com.planner.task.event.TaskEvent;
@@ -30,49 +27,49 @@ public class TaskService {
     private final TaskRepository taskRepository;
     private final TaskEventRepository taskEventRepository;
 
-    public TaskResponse create(CreateRequest req) {
+
+    public TaskDto.TaskResponse create(TaskDto.CreateRequest req) {
         LocalDate date = req.scheduledDate();
         if (date == null) {
             date = LocalDate.now(ZoneId.of("Asia/Seoul"));
         }
         Task task = new Task(req.title(), date);
-        Task saved = taskRepository.save(task);
-        return TaskResponse.from(saved);
+        return TaskDto.TaskResponse.from(taskRepository.save(task));
     }
 
     @Transactional(readOnly = true)
-    public List<TaskResponse> search(LocalDate from, LocalDate to, TaskStatus status) {
-        return taskRepository.search(from, to, status).stream().map(TaskResponse::from).toList();
+    public List<TaskDto.TaskResponse> search(LocalDate from, LocalDate to, TaskStatus status) {
+        return taskRepository.search(from, to, status).stream().map(TaskDto.TaskResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
-    public TaskResponse get(Long id) {
+    public TaskDto.TaskResponse get(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
-        return TaskResponse.from(task);
+                () -> new NotFoundException("Task not found :" + id));
+        return TaskDto.TaskResponse.from(task);
     }
 
-    public TaskResponse update(Long id, UpdateRequest req) {
+    public TaskDto.TaskResponse update(Long id, TaskDto.UpdateRequest req) {
         Task task = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+                () -> new NotFoundException("Task not found :" + id));
         task.update(req.title(), req.scheduledDate());
-        return TaskResponse.from(task);
+        return TaskDto.TaskResponse.from(task);
     }
 
     public void delete(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+                () -> new NotFoundException("Task not found :" + id));
         taskRepository.delete(task);
     }
 
-    public TaskResponse complete(Long id, String idempotencyKey) {
+    public TaskDto.TaskResponse complete(Long id, String idempotencyKey) {
         TaskEvent existed = taskEventRepository.findByIdempotencyKey(idempotencyKey).orElse(null);
 
         Task task = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+                () -> new NotFoundException("Task not found :" + id));
 
         if (existed != null) {
-            return TaskResponse.from(task); // 이미 처리된 요청 -> 현재 task로 반환
+            return TaskDto.TaskResponse.from(task); // 이미 처리된 요청 -> 현재 task로 반환
         }
 
         // 처리 로직
@@ -87,17 +84,17 @@ public class TaskService {
                     null
             ));
         } catch (DataIntegrityViolationException e) {
-            return TaskResponse.from(task);
+            return TaskDto.TaskResponse.from(task);
         }
-        return TaskResponse.from(task);
+        return TaskDto.TaskResponse.from(task);
     }
 
-    public TaskResponse undo(Long id, String reason) {
+    public TaskDto.TaskResponse undo(Long id, String reason) {
         Task task = taskRepository.findById(id).orElseThrow(
-                () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+                () -> new NotFoundException("Task not found :" + id));
 
         if (!task.isDone()) {
-            return TaskResponse.from(task);
+            return TaskDto.TaskResponse.from(task);
         }
 
         var now = LocalDateTime.now();
@@ -111,19 +108,19 @@ public class TaskService {
                 reason
         ));
 
-        return TaskResponse.from(task);
+        return TaskDto.TaskResponse.from(task);
     }
 
     @Transactional(readOnly = true)
-    public List<TaskEventResponse> events(Long taskId) {
+    public List<TaskDto.TaskEventResponse> events(Long taskId) {
         return taskEventRepository.findByTaskIdOrderByOccurredAtDesc(taskId).stream()
-                .map(TaskEventResponse::from).toList();
+                .map(TaskDto.TaskEventResponse::from).toList();
     }
 
-    public TaskResponse skip(Long id, String reason) {
-        Task task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("task가 없습니다. id = " + id));
+    public TaskDto.TaskResponse skip(Long id, String reason) {
+        Task task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Task not found :" + id));
         if (task.getStatus() == TaskStatus.DONE || task.getStatus() == TaskStatus.SKIPPED) {
-            return TaskResponse.from(task);
+            return TaskDto.TaskResponse.from(task);
         }
 
         var now = LocalDateTime.now();
@@ -136,7 +133,6 @@ public class TaskService {
                 null,
                 reason
         ));
-        return TaskResponse.from(task);
+        return TaskDto.TaskResponse.from(task);
     }
-
 }
