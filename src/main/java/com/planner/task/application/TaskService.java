@@ -1,18 +1,22 @@
-package com.planner.global.task.application;
+package com.planner.task.application;
 
 import com.planner.global.error.exceptiion.NotFoundException;
-import com.planner.global.task.application.dto.CreateRequest;
-import com.planner.global.task.application.dto.TaskResponse;
-import com.planner.global.task.application.dto.UpdateRequest;
-import com.planner.global.task.domain.Task;
-import com.planner.global.task.domain.TaskStatus;
-import com.planner.global.task.repository.TaskRepository;
+import com.planner.task.application.dto.CreateRequest;
+import com.planner.task.application.dto.TaskEventResponse;
+import com.planner.task.application.dto.TaskResponse;
+import com.planner.task.application.dto.UpdateRequest;
+import com.planner.task.domain.Task;
+import com.planner.task.event.TaskEvent;
+import com.planner.task.event.TaskEventType;
+import com.planner.task.repository.TaskEventRepository;
+import com.planner.task.repository.TaskRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -21,9 +25,14 @@ import java.util.List;
 public class TaskService {
 
     private final TaskRepository taskRepository;
+    private final TaskEventRepository taskEventRepository;
 
     public TaskResponse create(CreateRequest req) {
-        Task task = new Task(req.title(), req.scheduledDate());
+        LocalDate date = req.scheduledDate();
+        if (date == null) {
+            date = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        }
+        Task task = new Task(req.title(), date);
         Task saved = taskRepository.save(task);
         return TaskResponse.from(saved);
     }
@@ -54,19 +63,43 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    @Transactional
     public TaskResponse complete(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
-        task.complete(LocalDateTime.now());
+        var now = LocalDateTime.now();
+        task.complete(now);
+
+        taskEventRepository.save(TaskEvent.of(
+                task.getId(),
+                TaskEventType.COMPLETE,
+                now,
+                null,
+                null
+        ));
+
         return TaskResponse.from(task);
     }
 
-    @Transactional
     public TaskResponse undo(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task를 찾을 수 없습니다. id=" + id));
+        var now = LocalDateTime.now();
         task.undo();
+
+        taskEventRepository.save(TaskEvent.of(
+                task.getId(),
+                TaskEventType.UNDO,
+                now,
+                null,
+                null
+        ));
+
         return TaskResponse.from(task);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TaskEventResponse> events(Long taskId) {
+        return taskEventRepository.findByTaskIdOrderByOccurredAtDesc(taskId).stream()
+                .map(TaskEventResponse::from).toList();
     }
 }

@@ -1,4 +1,4 @@
-package com.planner.global.task.application.dto;
+package com.planner.task.application.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -1,6 +1,6 @@
-package com.planner.global.task.repository;
+package com.planner.task.repository;
 
-import com.planner.global.task.domain.Task;
+import com.planner.task.domain.Task;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 

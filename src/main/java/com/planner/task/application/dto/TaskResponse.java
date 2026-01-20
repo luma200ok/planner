@@ -1,7 +1,7 @@
-package com.planner.global.task.application.dto;
+package com.planner.task.application.dto;
 
-import com.planner.global.task.domain.Task;
-import com.planner.global.task.domain.TaskStatus;
+import com.planner.task.domain.Task;
+import com.planner.task.domain.TaskStatus;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

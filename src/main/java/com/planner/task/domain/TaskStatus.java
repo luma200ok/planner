@@ -1,4 +1,4 @@
-package com.planner.global.task.domain;
+package com.planner.task.domain;
 
 public enum TaskStatus {
     PLANNED,DONE
