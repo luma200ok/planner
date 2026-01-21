@@ -85,4 +85,8 @@ public class Task {
     public void attachTemplate(TaskTemplate template) {
         this.template = template;
     }
+
+    public void moveScheduledDate(LocalDate newDate) {
+        this.scheduledDate = newDate;
+    }
 }

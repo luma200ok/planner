@@ -27,4 +27,6 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     );
 
     Optional<Task> findByTemplateIdAndScheduledDate(Long template_id, LocalDate scheduledDate);
+
+    List<Task> findAllByScheduledDateAndStatus(LocalDate scheduledDate, TaskStatus status);
 }

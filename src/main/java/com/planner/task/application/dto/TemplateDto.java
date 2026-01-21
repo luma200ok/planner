@@ -20,7 +20,7 @@ public class TemplateDto {
             TemplateRuleType ruleType,
             boolean active
     ) {
-        public static TemplateResponse from(Long id, String title, TemplateRuleType ruleType,boolean active) {
+        public static TemplateResponse from(Long id, String title, TemplateRuleType ruleType, boolean active) {
             return new TemplateResponse(id, title, ruleType, active);
         }
     }

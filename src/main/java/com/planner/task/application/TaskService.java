@@ -19,6 +19,8 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.List;
 
+import static com.planner.task.application.dto.TaskDto.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -28,32 +30,32 @@ public class TaskService {
     private final TaskEventRepository taskEventRepository;
 
 
-    public TaskDto.TaskResponse create(TaskDto.CreateRequest req) {
+    public TaskResponse create(CreateRequest req) {
         LocalDate date = req.scheduledDate();
         if (date == null) {
             date = LocalDate.now(ZoneId.of("Asia/Seoul"));
         }
         Task task = new Task(req.title(), date);
-        return TaskDto.TaskResponse.from(taskRepository.save(task));
+        return TaskResponse.from(taskRepository.save(task));
     }
 
     @Transactional(readOnly = true)
-    public List<TaskDto.TaskResponse> search(LocalDate from, LocalDate to, TaskStatus status) {
-        return taskRepository.search(from, to, status).stream().map(TaskDto.TaskResponse::from).toList();
+    public List<TaskResponse> search(LocalDate from, LocalDate to, TaskStatus status) {
+        return taskRepository.search(from, to, status).stream().map(TaskResponse::from).toList();
     }
 
     @Transactional(readOnly = true)
-    public TaskDto.TaskResponse get(Long id) {
+    public TaskResponse get(Long id) {
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task not found :" + id));
-        return TaskDto.TaskResponse.from(task);
+        return TaskResponse.from(task);
     }
 
-    public TaskDto.TaskResponse update(Long id, TaskDto.UpdateRequest req) {
+    public TaskResponse update(Long id, UpdateRequest req) {
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task not found :" + id));
         task.update(req.title(), req.scheduledDate());
-        return TaskDto.TaskResponse.from(task);
+        return TaskResponse.from(task);
     }
 
     public void delete(Long id) {
@@ -62,14 +64,14 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    public TaskDto.TaskResponse complete(Long id, String idempotencyKey) {
+    public TaskResponse complete(Long id, String idempotencyKey) {
         TaskEvent existed = taskEventRepository.findByIdempotencyKey(idempotencyKey).orElse(null);
 
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task not found :" + id));
 
         if (existed != null) {
-            return TaskDto.TaskResponse.from(task); // 이미 처리된 요청 -> 현재 task로 반환
+            return TaskResponse.from(task); // 이미 처리된 요청 -> 현재 task로 반환
         }
 
         // 처리 로직
@@ -84,17 +86,17 @@ public class TaskService {
                     null
             ));
         } catch (DataIntegrityViolationException e) {
-            return TaskDto.TaskResponse.from(task);
+            return TaskResponse.from(task);
         }
-        return TaskDto.TaskResponse.from(task);
+        return TaskResponse.from(task);
     }
 
-    public TaskDto.TaskResponse undo(Long id, String reason) {
+    public TaskResponse undo(Long id, String reason) {
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task not found :" + id));
 
         if (!task.isDone()) {
-            return TaskDto.TaskResponse.from(task);
+            return TaskResponse.from(task);
         }
 
         var now = LocalDateTime.now();
@@ -108,19 +110,19 @@ public class TaskService {
                 reason
         ));
 
-        return TaskDto.TaskResponse.from(task);
+        return TaskResponse.from(task);
     }
 
     @Transactional(readOnly = true)
-    public List<TaskDto.TaskEventResponse> events(Long taskId) {
+    public List<TaskEventResponse> events(Long taskId) {
         return taskEventRepository.findByTaskIdOrderByOccurredAtDesc(taskId).stream()
-                .map(TaskDto.TaskEventResponse::from).toList();
+                .map(TaskEventResponse::from).toList();
     }
 
-    public TaskDto.TaskResponse skip(Long id, String reason) {
+    public TaskResponse skip(Long id, String reason) {
         Task task = taskRepository.findById(id).orElseThrow(() -> new NotFoundException("Task not found :" + id));
         if (task.getStatus() == TaskStatus.DONE || task.getStatus() == TaskStatus.SKIPPED) {
-            return TaskDto.TaskResponse.from(task);
+            return TaskResponse.from(task);
         }
 
         var now = LocalDateTime.now();
@@ -133,6 +135,6 @@ public class TaskService {
                 null,
                 reason
         ));
-        return TaskDto.TaskResponse.from(task);
+        return TaskResponse.from(task);
     }
 }

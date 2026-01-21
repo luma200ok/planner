@@ -62,7 +62,8 @@ public class TaskController {
     }
 
     @PostMapping("/{id}/complete")
-    public TaskDto.TaskResponse complete(@PathVariable Long id, @RequestHeader("Idempotency-Key") String idempotencyKey) {
+    public TaskDto.TaskResponse complete(@PathVariable Long id,
+                                         @RequestHeader("Idempotency-Key") String idempotencyKey) {
         return taskService.complete(id, idempotencyKey);
     }
 

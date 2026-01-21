@@ -4,5 +4,8 @@ public enum TaskEventType {
     COMPLETE,
     UNDO,
     RESCHEDULE,
-    SKIP
+    SKIP,
+    AUTO_SKIP,
+    ROLLOVER,
+    GENERATE
 }

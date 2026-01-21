@@ -13,6 +13,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
+import static com.planner.task.application.dto.TemplateDto.*;
+
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -21,10 +23,10 @@ public class TemplateService {
     private final TaskRepository taskRepository;
     private final TaskTemplateRepository templateRepository;
 
-    public TemplateDto.TemplateResponse create(TemplateDto.CreateRequest req) {
+    public TemplateResponse create(CreateRequest req) {
         TaskTemplate template = new TaskTemplate(req.title(), req.ruleType());
         TaskTemplate save = templateRepository.save(template);
-        return TemplateDto.TemplateResponse.from(save.getId(), save.getTitle(), save.getRuleType(), save.isActive());
+        return TemplateResponse.from(save.getId(), save.getTitle(), save.getRuleType(), save.isActive());
 
     }
 
