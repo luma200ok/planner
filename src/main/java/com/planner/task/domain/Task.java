@@ -25,7 +25,7 @@ import java.time.LocalDateTime;
         @Index(name = "idx_tasks_completed_at", columnList = "completedAt")
 })
 @Getter
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@NoArgsConstructor
 public class Task {
 
     @Id
@@ -70,7 +70,6 @@ public class Task {
     }
 
     public void undo() {
-        if (!isDone()) return;
         this.status = TaskStatus.PLANNED;
         this.completedAt = null;
     }

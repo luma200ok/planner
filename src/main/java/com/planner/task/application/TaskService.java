@@ -95,11 +95,12 @@ public class TaskService {
         Task task = taskRepository.findById(id).orElseThrow(
                 () -> new NotFoundException("Task not found :" + id));
 
-        if (!task.isDone()) {
+        if (task.getStatus() == TaskStatus.PLANNED) {
             return TaskResponse.from(task);
         }
-
         var now = LocalDateTime.now();
+
+        TaskStatus before = task.getStatus();
         task.undo();
 
         taskEventRepository.save(TaskEvent.of(
@@ -107,7 +108,7 @@ public class TaskService {
                 TaskEventType.UNDO,
                 now,
                 null,
-                reason
+                "from=" + before + ",to = PLANNED"
         ));
 
         return TaskResponse.from(task);

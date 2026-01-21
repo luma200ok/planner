@@ -6,11 +6,11 @@ public class DayCloseDto {
 
     public record DayCloseResponse(
             LocalDate closedDate,
-            LocalDate carryTo,
+            LocalDate nextDate,
             boolean carryOver,
             int plannedFound,
             int autoSkippedRecurring,
-            int rollOverOneOff,
+            int rolledOverOneOff,
             int autoSkippedOneOff,
             int generatedNext
             ) {
