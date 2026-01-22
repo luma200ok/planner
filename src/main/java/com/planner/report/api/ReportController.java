@@ -3,10 +3,9 @@ package com.planner.report.api;
 import com.planner.report.application.ReportService;
 import com.planner.report.application.dto.DailyReportRow;
 import com.planner.report.application.dto.SummaryReport;
-import com.planner.report.application.dto.TemplateReportRow;
+import com.planner.report.application.dto.TemplateReport;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -44,7 +43,7 @@ public class ReportController {
     }
 
     @GetMapping("/templates")
-    public List<TemplateReportRow> templates(
+    public List<TemplateReport> templates(
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
     ) {
