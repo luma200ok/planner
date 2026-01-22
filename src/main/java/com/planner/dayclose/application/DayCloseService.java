@@ -1,11 +1,9 @@
-package com.planner.task.application;
+package com.planner.dayclose.application;
 
-import com.planner.task.application.dto.DayCloseDto;
 import com.planner.task.domain.Task;
 import com.planner.task.domain.TaskStatus;
 import com.planner.task.domain.TaskTemplate;
 import com.planner.task.event.TaskEvent;
-import com.planner.task.event.TaskEventType;
 import com.planner.task.repository.TaskEventRepository;
 import com.planner.task.repository.TaskRepository;
 import com.planner.task.repository.TaskTemplateRepository;
@@ -17,7 +15,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static com.planner.task.application.dto.DayCloseDto.*;
+import static com.planner.dayclose.application.dto.DayCloseDto.*;
 import static com.planner.task.event.TaskEventType.*;
 
 @Service

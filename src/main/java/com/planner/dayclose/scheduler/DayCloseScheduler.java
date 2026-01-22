@@ -1,10 +1,8 @@
-package com.planner.task.scheduler;
+package com.planner.dayclose.scheduler;
 
-import com.planner.task.application.DayCloseGuard;
-import com.planner.task.application.DayCloseService;
-import com.planner.task.application.dto.DayCloseDto;
+import com.planner.dayclose.application.DayCloseGuard;
+import com.planner.dayclose.application.DayCloseService;
 import lombok.AccessLevel;
-import lombok.NoArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;

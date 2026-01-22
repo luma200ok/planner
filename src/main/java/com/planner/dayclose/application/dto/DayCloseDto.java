@@ -1,4 +1,4 @@
-package com.planner.task.application.dto;
+package com.planner.dayclose.application.dto;
 
 import java.time.LocalDate;
 

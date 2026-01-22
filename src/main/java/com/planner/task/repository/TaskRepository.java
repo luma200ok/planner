@@ -1,5 +1,6 @@
 package com.planner.task.repository;
 
+import com.planner.report.application.dto.DailyReportRow;
 import com.planner.task.domain.Task;
 import com.planner.task.domain.TaskStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -29,4 +30,15 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
     Optional<Task> findByTemplateIdAndScheduledDate(Long template_id, LocalDate scheduledDate);
 
     List<Task> findAllByScheduledDateAndStatus(LocalDate scheduledDate, TaskStatus status);
+
+    @Query("select new com.planner.report.application.dto.DailyReportRow(" +
+            "t.scheduledDate, count(t)," +
+            " sum(case when t.status = com.planner.task.domain.TaskStatus.DONE then 1 else 0 end)," +
+            " sum(case when t.status = com.planner.task.domain.TaskStatus.SKIPPED then 1 else 0 end )," +
+            " sum(case when t.status = com.planner.task.domain.TaskStatus.PLANNED then 1 else 0 end))" +
+            " from Task t" +
+            " where t.scheduledDate between :from and :to" +
+            " group by t.scheduledDate" +
+            " order by t.scheduledDate asc")
+    List<DailyReportRow> dailyReport(@Param("from") LocalDate from, @Param("to") LocalDate to);
 }

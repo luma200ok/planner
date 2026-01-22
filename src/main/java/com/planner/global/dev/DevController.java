@@ -1,8 +1,7 @@
-package com.planner.task.api;
+package com.planner.global.dev;
 
-import com.planner.task.application.DayCloseGuard;
-import com.planner.task.application.DayCloseService;
-import com.planner.task.application.dto.DayCloseDto;
+import com.planner.dayclose.application.DayCloseGuard;
+import com.planner.dayclose.application.DayCloseService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -12,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
-import static com.planner.task.application.dto.DayCloseDto.*;
+import static com.planner.dayclose.application.dto.DayCloseDto.*;
 import static org.springframework.format.annotation.DateTimeFormat.*;
 
 @RestController
