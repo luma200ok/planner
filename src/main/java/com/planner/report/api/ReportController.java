@@ -2,8 +2,10 @@ package com.planner.report.api;
 
 import com.planner.report.application.ReportService;
 import com.planner.report.application.dto.DailyReportRow;
+import com.planner.report.application.dto.SummaryReport;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,5 +32,13 @@ public class ReportController {
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
     ) {
         return reportService.getDaily(from, to);
+    }
+
+    @GetMapping("/summary")
+    public SummaryReport summary(
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
+    ) {
+        return reportService.getSummary(from, to);
     }
 }
