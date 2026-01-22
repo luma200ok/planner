@@ -2,6 +2,7 @@ package com.planner.task.repository;
 
 import com.planner.report.application.dto.DailyReportRow;
 import com.planner.report.application.dto.SummaryRow;
+import com.planner.report.application.dto.TemplateReportRow;
 import com.planner.task.domain.Task;
 import com.planner.task.domain.TaskStatus;
 import jakarta.persistence.Column;
@@ -57,5 +58,19 @@ public interface TaskRepository extends JpaRepository<Task, Long> {
             " sum(case when t.status = com.planner.task.domain.TaskStatus.PLANNED then 1 else 0 end))" +
             " from Task t" +
             " where t.scheduledDate between :from and :to")
-    public SummaryRow summary(@Param("from") LocalDate from, @Param("to") LocalDate to);
+    SummaryRow summary(@Param("from") LocalDate from, @Param("to") LocalDate to);
+
+    @Query("select new com.planner.report.application.dto.TemplateReportRow(" +
+            "tt.id," +
+            "tt.title," +
+            "cast(tt.ruleType as string)," +
+            "count(t)," +
+            " sum(case when t.status = com.planner.task.domain.TaskStatus.DONE then 1 else 0 end)," +
+            " sum(case when t.status = com.planner.task.domain.TaskStatus.SKIPPED then 1 else 0 end )," +
+            " sum(case when t.status = com.planner.task.domain.TaskStatus.PLANNED then 1 else 0 end))" + " from Task t" +
+            " join t.template tt" +
+            " where t.scheduledDate between :from and :to" +
+            " group by tt.id, tt.title, tt.ruleType" +
+            " order by count(t) desc, tt.id asc")
+    List<TemplateReportRow> templateReport(LocalDate from, LocalDate to);
 }

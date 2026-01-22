@@ -3,6 +3,7 @@ package com.planner.report.api;
 import com.planner.report.application.ReportService;
 import com.planner.report.application.dto.DailyReportRow;
 import com.planner.report.application.dto.SummaryReport;
+import com.planner.report.application.dto.TemplateReportRow;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cglib.core.Local;
@@ -26,7 +27,7 @@ public class ReportController {
 
     private final ReportService reportService;
 
-    @GetMapping("/dialy")
+    @GetMapping("/daily")
     public List<DailyReportRow> daily(
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
@@ -40,5 +41,13 @@ public class ReportController {
             @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
     ) {
         return reportService.getSummary(from, to);
+    }
+
+    @GetMapping("/templates")
+    public List<TemplateReportRow> templates(
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate from,
+            @RequestParam @DateTimeFormat(iso = ISO.DATE) LocalDate to
+    ) {
+        return reportService.getTemplates(from, to);
     }
 }
