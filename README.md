@@ -62,8 +62,10 @@ PlannerApplication 실행
 ---
 
 ## API Endpoints
+<details>
+<summary>🔽 Api Endpoints</summary>
 
-### Tasks
+## Tasks
 - `POST /tasks` : 할 일 생성
 - `GET /tasks?from=&to=&status=` : 기간/상태 검색
 - `GET /tasks/{id}` : 단건 조회
@@ -91,4 +93,5 @@ PlannerApplication 실행
 - `GET /reports/summary?from=YYYY-MM-DD&to=YYYY-MM-DD`
 - `GET /reports/templates?from=YYYY-MM-DD&to=YYYY-MM-DD`
 
+</details>
 ---
