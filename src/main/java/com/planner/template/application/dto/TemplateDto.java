@@ -1,6 +1,6 @@
-package com.planner.task.application.dto;
+package com.planner.template.application.dto;
 
-import com.planner.task.domain.TemplateRuleType;
+import com.planner.template.domain.TemplateRuleType;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 

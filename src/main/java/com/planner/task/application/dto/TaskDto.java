@@ -2,8 +2,8 @@ package com.planner.task.application.dto;
 
 import com.planner.task.domain.Task;
 import com.planner.task.domain.TaskStatus;
-import com.planner.task.domain.TaskTemplate;
-import com.planner.task.domain.TemplateRuleType;
+import com.planner.template.domain.Template;
+import com.planner.template.domain.TemplateRuleType;
 import com.planner.task.event.TaskEvent;
 import com.planner.task.event.TaskEventType;
 import jakarta.validation.constraints.NotBlank;
@@ -48,7 +48,7 @@ public class TaskDto {
             DayOfWeek templateDayOfWeek
     ) {
         public static TaskResponse from(Task task) {
-            TaskTemplate template = task.getTemplate();
+            Template template = task.getTemplate();
             return new TaskResponse(
                     task.getId(),
                     task.getTitle(),

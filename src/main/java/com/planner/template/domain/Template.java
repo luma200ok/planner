@@ -1,5 +1,7 @@
-package com.planner.task.domain;
+package com.planner.template.domain;
 
+import com.planner.Tempaltem.domain.TemplateItem;
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +9,8 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OrderBy;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -14,12 +18,14 @@ import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "task_templates")
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TaskTemplate {
+public class Template {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +45,11 @@ public class TaskTemplate {
     @Column(length = 10)
     private DayOfWeek dayOfWeek;
 
-    public TaskTemplate(String title, TemplateRuleType ruleType) {
+    @OneToMany(mappedBy = "template", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OrderBy("sortOrder asc, id asc")
+    private List<TemplateItem> items = new ArrayList<>();
+
+    public Template(String title, TemplateRuleType ruleType) {
         this.title = title;
         this.ruleType = ruleType;
     }

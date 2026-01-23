@@ -2,11 +2,11 @@ package com.planner.dayclose.application;
 
 import com.planner.task.domain.Task;
 import com.planner.task.domain.TaskStatus;
-import com.planner.task.domain.TaskTemplate;
+import com.planner.template.domain.Template;
 import com.planner.task.event.TaskEvent;
 import com.planner.task.repository.TaskEventRepository;
 import com.planner.task.repository.TaskRepository;
-import com.planner.task.repository.TaskTemplateRepository;
+import com.planner.template.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,7 +24,7 @@ import static com.planner.task.event.TaskEventType.*;
 public class DayCloseService {
 
     private final TaskRepository taskRepository;
-    private final TaskTemplateRepository templateRepository;
+    private final TemplateRepository templateRepository;
     private final TaskEventRepository eventRepository;
 
     public DayCloseResponse close(LocalDate date, boolean carryOver, LocalDate carryTo) {
@@ -74,8 +74,8 @@ public class DayCloseService {
             }
         }
 
-        List<TaskTemplate> templates = templateRepository.findAll();
-        for (TaskTemplate template : templates) {
+        List<Template> templates = templateRepository.findAll();
+        for (Template template : templates) {
             if (!template.matches(nextDate)) continue;
 
             boolean exists = taskRepository.findByTemplateIdAndScheduledDate(template.getId(), nextDate).isPresent();

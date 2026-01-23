@@ -1,5 +1,7 @@
 package com.planner.task.domain;
 
+import com.planner.Tempaltem.domain.TemplateItem;
+import com.planner.template.domain.Template;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -12,7 +14,6 @@ import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
-import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -46,7 +47,18 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "template_id")
-    private TaskTemplate template;
+    private Template template;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "templateItem_id")
+    private TemplateItem templateItem;
+
+    public static Task fromTemplateItem(Template template, TemplateItem item, LocalDate scheduledDate) {
+        Task t = new Task(item.getName(), scheduledDate);
+        t.template = template;
+        t.templateItem = item;
+        return t;
+    }
 
     public Task(String title, LocalDate scheduledDate) {
         this.title = title;
@@ -81,7 +93,7 @@ public class Task {
         this.completedAt = now;
     }
 
-    public void attachTemplate(TaskTemplate template) {
+    public void attachTemplate(Template template) {
         this.template = template;
     }
 

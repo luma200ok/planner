@@ -1,19 +1,18 @@
-package com.planner.task.application;
+package com.planner.template.application;
 
 import com.planner.global.error.exceptiion.NotFoundException;
 import com.planner.task.application.dto.TaskDto;
-import com.planner.task.application.dto.TemplateDto;
 import com.planner.task.domain.Task;
-import com.planner.task.domain.TaskTemplate;
+import com.planner.template.domain.Template;
 import com.planner.task.repository.TaskRepository;
-import com.planner.task.repository.TaskTemplateRepository;
+import com.planner.template.repository.TemplateRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 
-import static com.planner.task.application.dto.TemplateDto.*;
+import static com.planner.template.application.dto.TemplateDto.*;
 
 @Service
 @Transactional
@@ -21,17 +20,17 @@ import static com.planner.task.application.dto.TemplateDto.*;
 public class TemplateService {
 
     private final TaskRepository taskRepository;
-    private final TaskTemplateRepository templateRepository;
+    private final TemplateRepository templateRepository;
 
     public TemplateResponse create(CreateRequest req) {
-        TaskTemplate template = new TaskTemplate(req.title(), req.ruleType());
-        TaskTemplate save = templateRepository.save(template);
+        Template template = new Template(req.title(), req.ruleType());
+        Template save = templateRepository.save(template);
         return TemplateResponse.from(save.getId(), save.getTitle(), save.getRuleType(), save.isActive());
 
     }
 
     public TaskDto.TaskResponse generate(Long templateId, LocalDate date) {
-        TaskTemplate template = templateRepository.findById(templateId).orElseThrow(
+        Template template = templateRepository.findById(templateId).orElseThrow(
                 () -> new NotFoundException("template not found : " + templateId));
 
         if (!template.isActive() || !template.matches(date)) {

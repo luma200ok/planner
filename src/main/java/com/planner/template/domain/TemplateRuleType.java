@@ -1,4 +1,4 @@
-package com.planner.task.domain;
+package com.planner.template.domain;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;

@@ -1,10 +1,7 @@
 package com.planner.report.application.dto;
 
 import com.planner.report.application.ReportService;
-import com.planner.task.application.TaskService;
-import com.planner.task.application.TemplateService;
 import com.planner.task.repository.TaskRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
