@@ -21,19 +21,19 @@ public class TemplateItemService {
     private final TemplateItemRepository itemRepository;
 
     @Transactional
-    public Response addItem(Long templateId, TemplateItemDto.ItemCreateRequest req) {
+    public ItemResponse addItem(Long templateId, TemplateItemDto.ItemCreateRequest req) {
         Template template = templateRepository.findById(templateId).orElseThrow(
                 () -> new IllegalArgumentException("template not found: " + templateId));
 
         int sortOrder = (req.sortOrder() == null) ? 0 : req.sortOrder();
-        TemplateItem item = new TemplateItem(template, req.name(), req.sortOrder());
+        TemplateItem item = new TemplateItem(template, req.title(), req.sortOrder());
 
-        return Response.from(itemRepository.save(item));
+        return ItemResponse.from(itemRepository.save(item));
     }
 
     @Transactional(readOnly = true)
-    public List<Response> list(Long templateId) {
+    public List<ItemResponse> list(Long templateId) {
         return itemRepository.findAllByTemplateIdOrderBySortOrderAscIdAsc(templateId)
-                .stream().map(Response::from).toList();
+                .stream().map(ItemResponse::from).toList();
     }
 }

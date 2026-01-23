@@ -32,7 +32,7 @@ public class TaskController {
     private final TaskService taskService;
 
     @PostMapping
-    public TaskDto.TaskResponse create(@Valid @RequestBody TaskDto.CreateRequest req) {
+    public TaskDto.TaskResponse create(@Valid @RequestBody TaskDto.TaskCreateRequest req) {
         return taskService.create(req);
     }
 

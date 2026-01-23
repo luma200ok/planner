@@ -27,7 +27,7 @@ public class TemplateController {
     private final TemplateGenerateService templateGenerateService;
 
     @PostMapping
-    public TemplateDto.TemplateResponse create(@RequestBody @Valid TemplateDto.CreateRequest req) {
+    public TemplateDto.TemplateResponse create(@RequestBody @Valid TemplateDto.TemplateCreateRequest req) {
         return templateService.create(req);
     }
 

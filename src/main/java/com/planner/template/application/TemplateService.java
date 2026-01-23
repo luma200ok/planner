@@ -22,7 +22,7 @@ public class TemplateService {
     private final TaskRepository taskRepository;
     private final TemplateRepository templateRepository;
 
-    public TemplateResponse create(CreateRequest req) {
+    public TemplateResponse create(TemplateCreateRequest req) {
         Template template = new Template(req.title(), req.ruleType());
         Template save = templateRepository.save(template);
         return TemplateResponse.from(save.getId(), save.getTitle(), save.getRuleType(), save.isActive());

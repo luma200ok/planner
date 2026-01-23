@@ -3,11 +3,11 @@ package com.planner.Tempaltem.application.dto;
 import com.planner.Tempaltem.domain.TemplateItem;
 
 public class TemplateItemDto {
-    public record ItemCreateRequest(String name, Integer sortOrder) {}
+    public record ItemCreateRequest(String title, Integer sortOrder) {}
 
-    public record Response(Long id, String name, int sortOrder) {
-        public static Response from(TemplateItem item) {
-            return new Response(item.getId(), item.getName(), item.getSortOrder());
+    public record ItemResponse(Long id, String title, int sortOrder) {
+        public static ItemResponse from(TemplateItem item) {
+            return new ItemResponse(item.getId(), item.getName(), item.getSortOrder());
         }
     }
 }

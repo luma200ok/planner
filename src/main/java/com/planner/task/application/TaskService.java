@@ -1,7 +1,6 @@
 package com.planner.task.application;
 
 import com.planner.global.error.exceptiion.NotFoundException;
-import com.planner.task.application.dto.TaskDto;
 import com.planner.task.domain.Task;
 import com.planner.task.domain.TaskStatus;
 import com.planner.task.event.TaskEvent;
@@ -30,7 +29,7 @@ public class TaskService {
     private final TaskEventRepository taskEventRepository;
 
 
-    public TaskResponse create(CreateRequest req) {
+    public TaskResponse create(TaskCreateRequest req) {
         LocalDate date = req.scheduledDate();
         if (date == null) {
             date = LocalDate.now(ZoneId.of("Asia/Seoul"));

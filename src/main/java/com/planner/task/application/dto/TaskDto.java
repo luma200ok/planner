@@ -15,7 +15,7 @@ import java.time.LocalDateTime;
 
 public class TaskDto {
 
-    public record CreateRequest(
+    public record TaskCreateRequest(
             @NotBlank(message = "title은 필수입니다.")
             String title,
             LocalDate scheduledDate) {

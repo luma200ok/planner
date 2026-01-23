@@ -8,7 +8,7 @@ import java.time.DayOfWeek;
 
 public class TemplateDto {
 
-    public record CreateRequest(
+    public record TemplateCreateRequest(
             @NotBlank String title,
             @NotNull TemplateRuleType ruleType,
             DayOfWeek dayOfWeek // WEEKLY 일때만 필수
