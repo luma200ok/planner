@@ -9,7 +9,7 @@ import org.springframework.data.repository.query.Param;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-public interface DayClosLogRepository extends JpaRepository<DayCloseLog, Long> {
+public interface DayCloseLogRepository extends JpaRepository<DayCloseLog, Long> {
 //    Optional<DayCloseLog> findByClosedDate(LocalDate closedDate);
 
     @Modifying

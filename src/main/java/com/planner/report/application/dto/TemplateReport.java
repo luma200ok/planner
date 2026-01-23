@@ -8,11 +8,12 @@ public record TemplateReport(
         long done,
         long skipped,
         long planned,
-        double completionRate
+        double completionRate // 0~100%
 ) {
     public static TemplateReport of(Long templateId, String templateName, String rule,
-                                    Long total, long done, long skipped, long planned) {
-        double rate = total == 0 ? 0.0 : (double) done / total;
+                                    long total, long done, long skipped, long planned) {
+        double rate = total == 0 ? 0.0 : (done*100.0) / total;
+        rate = Math.round(rate * 10.0) / 10.0;
         return new TemplateReport(templateId, templateName, rule, total, done, skipped, planned, rate);
     }
 }

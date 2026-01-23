@@ -34,7 +34,6 @@ public class DayCloseService {
         List<Task> planned = taskRepository.findAllByScheduledDateAndStatus(date, TaskStatus.PLANNED);
         int plannedFound = planned.size();
 
-
         int autoSkippedRecurring =0;
         int rollOverOneOff = 0;
         int autoSkippedOneOff = 0;
