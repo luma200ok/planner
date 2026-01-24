@@ -1,6 +1,6 @@
 # Planner (Study Planner Backend)
 
-[![CI](https://github.com/<OWNER>/<REPO>/actions/workflows/ci.yml/badge.svg)](https://github.com/<OWNER>/<REPO>/actions/workflows/ci.yml)
+[![CI](https://github.com/luma200ok/planner/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/luma200ok/planner/actions/workflows/ci.yml)
 ![Java](https://img.shields.io/badge/Java-21-000000)
 ![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.x-000000)
 ![Gradle](https://img.shields.io/badge/Gradle-8.x-000000)
