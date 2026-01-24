@@ -1,6 +1,7 @@
 package com.planner.Tempaltem.api;
 
 import com.planner.Tempaltem.application.TemplateItemService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,7 +14,7 @@ import java.util.List;
 
 import static com.planner.Tempaltem.application.dto.TemplateItemDto.*;
 
-
+@Tag(name = "Template Items", description = "템플릿 할일 목록 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/templates/{id}/items")

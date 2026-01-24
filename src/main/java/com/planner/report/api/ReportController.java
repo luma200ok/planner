@@ -18,7 +18,7 @@ import java.util.List;
 import static org.springframework.format.annotation.DateTimeFormat.*;
 
 
-@Tag(name = "Reports")
+@Tag(name = "Reports", description = "통계/리포트 API")
 @RestController
 @RequestMapping("/reports")
 @RequiredArgsConstructor

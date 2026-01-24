@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.time.LocalDate;
 
-@Tag(name = "Templates")
+@Tag(name = "Template", description = "반복 템플릿 API")
 @RestController
 @RequestMapping("/templates")
 @RequiredArgsConstructor

@@ -1,6 +1,7 @@
 package com.planner.dayclose.api;
 
 import com.planner.dayclose.application.DayCloseService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -13,6 +14,7 @@ import java.time.LocalDate;
 import static com.planner.dayclose.application.dto.DayCloseDto.*;
 import static org.springframework.format.annotation.DateTimeFormat.*;
 
+@Tag(name = "DayClose", description = "일 마감/자동 스킵/생성 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/day-close")
