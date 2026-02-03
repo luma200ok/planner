@@ -42,7 +42,7 @@ PlannerApplication 실행
 
 ---
 ## Swagger
-- Swagger UI: `/swagger-ui/index.html`
+- Swagger UI: `http://localhost:8080/swagger-ui/index.html#/`
 
 (프로젝트 설정에 따라 경로가 다를 수 있으며, 실제 노출 경로 기준.)
   ![local-run](docs/images/swagger_short.png)
