@@ -1,6 +1,6 @@
 package com.planner.template.domain;
 
-import com.planner.Tempaltem.domain.TemplateItem;
+import com.planner.templateitem.domain.TemplateItem;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -52,6 +52,16 @@ public class Template {
     public Template(String title, TemplateRuleType ruleType) {
         this.title = title;
         this.ruleType = ruleType;
+    }
+
+    public void addItem(TemplateItem item) {
+        items.add(item);
+        item.setTemplate(this);
+    }
+
+    public void removeItem(TemplateItem item) {
+        items.remove(item);
+        item.setTemplate(null);
     }
 
     public boolean matches(LocalDate date) {

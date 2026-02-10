@@ -1,6 +1,6 @@
-package com.planner.Tempaltem.api;
+package com.planner.templateitem.api;
 
-import com.planner.Tempaltem.application.TemplateItemService;
+import com.planner.templateitem.application.TemplateItemService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
-import static com.planner.Tempaltem.application.dto.TemplateItemDto.*;
+import static com.planner.templateitem.application.dto.TemplateItemDto.*;
 
 @Tag(name = "Template Items", description = "템플릿 할일 목록 API")
 @RestController

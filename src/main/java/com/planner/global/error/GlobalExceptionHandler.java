@@ -1,6 +1,7 @@
 package com.planner.global.error;
 
 import com.planner.global.error.exceptiion.NotFoundException;
+import jakarta.servlet.http.HttpServletRequest;
 import org.hibernate.annotations.NotFound;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -29,7 +30,10 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleUnknown(Exception e) {
+    public ResponseEntity<ErrorResponse> handleUnknown(Exception e, HttpServletRequest request) {
+        if (!request.getRequestURI().startsWith("/api")) {
+            return null;
+        }
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ErrorResponse.of("INTERNAL_ERROR", "서버 오류가 발생했습니다."));
     }

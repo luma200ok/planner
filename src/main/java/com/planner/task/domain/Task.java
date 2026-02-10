@@ -1,6 +1,6 @@
 package com.planner.task.domain;
 
-import com.planner.Tempaltem.domain.TemplateItem;
+import com.planner.templateitem.domain.TemplateItem;
 import com.planner.template.domain.Template;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -91,6 +91,10 @@ public class Task {
         if (this.status == TaskStatus.SKIPPED) return;
         this.status = TaskStatus.SKIPPED;
         this.completedAt = now;
+    }
+
+    public static Task create(String title, LocalDate scheduledDate) {
+        return new Task(title, scheduledDate);
     }
 
     public void attachTemplate(Template template) {

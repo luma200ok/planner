@@ -3,6 +3,7 @@ package com.planner.template.application;
 import com.planner.global.error.exceptiion.NotFoundException;
 import com.planner.task.application.dto.TaskDto;
 import com.planner.task.domain.Task;
+import com.planner.template.application.dto.TemplateDto;
 import com.planner.template.domain.Template;
 import com.planner.task.repository.TaskRepository;
 import com.planner.template.repository.TemplateRepository;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
+import java.util.List;
 
 import static com.planner.template.application.dto.TemplateDto.*;
 
@@ -46,5 +48,20 @@ public class TemplateService {
         taskRepository.save(task);
 
         return TaskDto.TaskResponse.from(task);
+    }
+
+    @Transactional(readOnly = true)
+    public List<TemplateResponse> list() {
+        return templateRepository.findAll().stream()
+                .map(TemplateDto.TemplateResponse::from)
+                .toList();
+    }
+
+    @Transactional
+    public void delete(Long templateId) {
+        Template template = templateRepository.findById(templateId)
+                .orElseThrow(() -> new IllegalArgumentException("템플릿이 없습니다. id=" + templateId));
+
+        templateRepository.delete(template);
     }
 }

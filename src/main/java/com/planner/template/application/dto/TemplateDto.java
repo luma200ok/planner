@@ -20,8 +20,12 @@ public class TemplateDto {
             TemplateRuleType ruleType,
             boolean active
     ) {
-        public static TemplateResponse from(Long id, String title, TemplateRuleType ruleType, boolean active) {
+        public static TemplateResponse from(
+                Long id, String title, TemplateRuleType ruleType, boolean active) {
             return new TemplateResponse(id, title, ruleType, active);
+        }
+        public static TemplateResponse from(com.planner.template.domain.Template t) {
+            return new TemplateResponse(t.getId(), t.getTitle(), t.getRuleType(), t.isActive());
         }
     }
 }

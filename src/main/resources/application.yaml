@@ -1,7 +1,14 @@
 spring:
-  profiles:
-    active: local
   application:
     name: planner
-  jackson:
-    time-zone: Asia/Seoul
+
+  jpa:
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+
+server:
+  port: 8081
+
+

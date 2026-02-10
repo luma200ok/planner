@@ -1,6 +1,6 @@
-package com.planner.Tempaltem.repository;
+package com.planner.templateitem.repository;
 
-import com.planner.Tempaltem.domain.TemplateItem;
+import com.planner.templateitem.domain.TemplateItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
