@@ -1,11 +1,10 @@
-<!-- index.html -->
 <!doctype html>
 <html lang="ko">
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta charset="utf-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Planner</title>
-    <link rel="stylesheet" href="./app.css" />
+    <link rel="stylesheet" href="./app.css"/>
 </head>
 <body>
 <header class="topbar">
@@ -13,10 +12,9 @@
         <div class="logo">P</div>
         <div>
             <div class="title">Planner</div>
-            <div class="sub">Task / Template 기반</div>
+            <div class="sub">통합 관리 대시보드</div>
         </div>
     </div>
-
     <div class="week-nav">
         <button id="prevWeek" class="btn ghost">◀</button>
         <div class="week-label">
@@ -29,175 +27,72 @@
 </header>
 
 <main class="layout">
-    <!-- Left: Actions -->
     <section class="panel">
         <h2 class="h2">빠른 추가</h2>
-
         <div class="card">
             <label class="label" for="quickTitle">제목</label>
-            <input id="quickTitle" class="input" placeholder="예) 독서 30분" />
+            <input id="quickTitle" class="input" placeholder="예) 독서 30분"/>
 
-            <div class="row">
+            <div class="row" style="margin-top: 10px;">
                 <div class="col">
-                    <label class="label" for="quickDate">날짜</label>
-                    <input id="quickDate" type="date" class="input" />
-                </div>
-                <div class="col">
-                    <label class="label" for="quickStatus">상태</label>
-                    <select id="quickStatus" class="input">
-                        <option value="PLANNED">PLANNED</option>
-                        <option value="DONE">DONE</option>
-                        <option value="SKIPPED">SKIPPED</option>
+                    <label class="label" for="quickRule">반복 설정</label>
+                    <select id="quickRule" class="input">
+                        <option value="NONE">반복 없음</option>
+                        <option value="DAILY">매일</option>
+                        <option value="WEEKDAYS">평일 (월-금)</option>
+                        <option value="WEEKENDS">주말 (토-일)</option>
                     </select>
                 </div>
-            </div>
-
-            <button id="createTask" class="btn primary">+ Task 생성</button>
-            <div class="hint">생성 후 상태는 카드에서 complete/skip/undo로 변경</div>
-        </div>
-
-        <h2 class="h2">템플릿</h2>
-
-        <div class="card">
-            <div class="row">
                 <div class="col">
-                    <label class="label" for="templateSelect">템플릿 선택</label>
-                    <select id="templateSelect" class="input"></select>
-                </div>
-                <div class="col">
-                    <label class="label" for="templateStart">기준 날짜(주 시작)</label>
-                    <input id="templateStart" type="date" class="input" />
+                    <label class="label" for="quickDate">마감 날짜</label>
+                    <input id="quickDate" type="date" class="input"/>
                 </div>
             </div>
-
-            <label class="label" for="weekName">주간 이름</label>
-            <input id="weekName" class="input" placeholder="예) 2월 2주차 루틴" />
-
-            <div class="row">
-                <button id="loadTemplates" class="btn">새로고침</button>
-                <button id="openTemplateModal" class="btn ghost">템플릿 관리</button>
-                <button id="btnDeleteTemplate" class="btn">템플릿 삭제</button>
-            </div>
-
-            <button id="generateFromTemplate" class="btn primary">⚡ 템플릿으로 주간 생성</button>
-            <div class="hint">백엔드 generate 규격(쿼리/바디)이 달라도 자동으로 맞춰 시도함</div>
+            <button id="createTask" class="btn primary" style="width: 100%; margin-top: 15px;">추가하기</button>
         </div>
 
         <h2 class="h2">필터</h2>
         <div class="card">
-            <label class="label" for="statusFilter">상태</label>
             <select id="statusFilter" class="input">
-                <option value="ALL">ALL</option>
-                <option value="PLANNED">PLANNED</option>
-                <option value="DONE">DONE</option>
-                <option value="SKIPPED">SKIPPED</option>
+                <option value="">전체 보기</option>
+                <option value="PLANNED">진행 예정</option>
+                <option value="DONE">완료됨</option>
+                <option value="SKIPPED">스킵됨</option>
             </select>
-            <button id="applyFilter" class="btn">적용</button>
+            <button id="applyFilter" class="btn" style="width: 100%; margin-top: 10px;">필터 적용</button>
+        </div>
+
+        <h2 class="h2" style="color: var(--warn);">운영 도구</h2>
+        <div class="card" style="border: 1px solid var(--warn);">
+            <button id="dayCloseBtn" class="btn warn" style="width: 100%;">오늘 하루 마감하기</button>
+        </div>
+
+        <h2 class="h2">템플릿 설정</h2>
+        <div class="card">
+            <button id="openTemplateModal" class="btn ghost" style="width: 100%;">템플릿 관리 열기</button>
         </div>
     </section>
 
-    <!-- Right: Board -->
-    <section class="board-wrap">
-        <div class="board-head">
-            <h2 class="h2">주간 보드</h2>
-            <div class="pill">
-                <span class="dot"></span>
-                <span id="serverHint">GET /tasks?from~to</span>
-            </div>
-        </div>
-
-        <div id="board" class="board"></div>
-    </section>
+    <section id="board" class="board"></section>
 </main>
 
-<!-- Template Modal -->
 <div id="modalBackdrop" class="modal-backdrop hidden">
     <div class="modal">
-        <div class="modal-head">
-            <div>
-                <div class="modal-title">템플릿 관리</div>
-                <div class="modal-sub">템플릿 생성 / 아이템 추가</div>
-            </div>
+        <div class="modal-header">
+            <h2>템플릿/아이템 설정</h2>
             <button id="closeModal" class="btn ghost">닫기</button>
         </div>
-
         <div class="modal-body">
-            <div class="grid2">
-                <div class="card">
-                    <h3 class="h3">새 템플릿 생성</h3>
-
-                    <label class="label" for="newTemplateName">템플릿 이름</label>
-                    <input id="newTemplateName" class="input" placeholder="예) 매주 평일 루틴" />
-
-                    <label class="label" for="newTemplateRuleType">반복 유형</label>
-                    <select id="newTemplateRuleType" class="input">
-                        <option value="DAILY">DAILY (매일)</option>
-                        <option value="WEEKDAYS">WEEKDAYS (평일)</option>
-                        <option value="WEEKENDS">WEEKENDS (주말)</option>
-                        <option value="WEEKLY">WEEKLY (주 1회)</option>
-                    </select>
-
-                    <!-- ✅ WEEKLY일 때만 활성: 요일 선택 (기존 별도 카드 제거) -->
-                    <label class="label" for="newTemplateDayOfWeek">요일 (WEEKLY만)</label>
-                    <select id="newTemplateDayOfWeek" class="input" disabled>
-                        <option value="">(선택)</option>
-                        <option value="MONDAY">MONDAY</option>
-                        <option value="TUESDAY">TUESDAY</option>
-                        <option value="WEDNESDAY">WEDNESDAY</option>
-                        <option value="THURSDAY">THURSDAY</option>
-                        <option value="FRIDAY">FRIDAY</option>
-                        <option value="SATURDAY">SATURDAY</option>
-                        <option value="SUNDAY">SUNDAY</option>
-                    </select>
-
-                    <button id="createTemplate" class="btn primary">+ 템플릿 생성</button>
-                </div>
-
-                <div class="card">
-                    <h3 class="h3">템플릿 아이템 추가</h3>
-
-                    <label class="label" for="itemTemplateSelect">대상 템플릿</label>
-                    <select id="itemTemplateSelect" class="input"></select>
-
-                    <label class="label" for="itemTitle">아이템 제목</label>
-                    <input id="itemTitle" class="input" placeholder="예) 운동" />
-
-                    <div class="row">
-                        <div class="col">
-                            <label class="label" for="itemRuleType">RuleType</label>
-                            <select id="itemRuleType" class="input">
-                                <option value="DAILY">DAILY</option>
-                                <option value="WEEKLY">WEEKLY</option>
-                            </select>
-                        </div>
-                        <div class="col">
-                            <label class="label" for="itemDayOfWeek">요일 (WEEKLY만)</label>
-                            <select id="itemDayOfWeek" class="input" disabled>
-                                <option value="">(없음)</option>
-                                <option value="MONDAY">MONDAY</option>
-                                <option value="TUESDAY">TUESDAY</option>
-                                <option value="WEDNESDAY">WEDNESDAY</option>
-                                <option value="THURSDAY">THURSDAY</option>
-                                <option value="FRIDAY">FRIDAY</option>
-                                <option value="SATURDAY">SATURDAY</option>
-                                <option value="SUNDAY">SUNDAY</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <button id="addTemplateItem" class="btn primary">+ 아이템 추가</button>
-                    <div class="hint">WEEKLY면 요일을 지정하는 걸 추천</div>
-                </div>
-            </div>
-
             <div class="card">
-                <h3 class="h3">선택 템플릿 아이템 목록</h3>
-                <div class="row">
-                    <select id="itemsViewTemplateSelect" class="input"></select>
-                    <button id="loadTemplateItems" class="btn">불러오기</button>
-                </div>
-                <div id="templateItemsList" class="list"></div>
+                <h3>템플릿 생성</h3>
+                <input id="newTemplateName" class="input" placeholder="이름"/>
+                <select id="newTemplateRuleType" class="input">
+                    <option value="DAILY">DAILY</option>
+                    <option value="WEEKLY">WEEKLY</option>
+                </select>
+                <button id="createTemplate" class="btn primary">생성</button>
             </div>
+            <div id="templateList" class="list"></div>
         </div>
     </div>
 </div>

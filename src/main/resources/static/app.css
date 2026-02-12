@@ -414,3 +414,151 @@ body {
         grid-template-columns:1fr
     }
 }
+
+/* 날짜 입력창 스타일 보강 */
+.input[type="date"] {
+    position: relative;
+    padding-right: 40px; /* 아이콘 공간 확보 */
+    cursor: pointer;
+}
+
+/* 브라우저 기본 달력 아이콘 스타일 커스텀 (크롬, 엣지용) */
+.input[type="date"]::-webkit-calendar-picker-indicator {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    /* 달력 모양 아이콘 강조 */
+    filter: invert(0.5); /* 어두운 테마라면 흰색 계열로 변경 */
+}
+
+/* 만약 아이콘을 완전히 새로 넣고 싶다면 배경 이미지 방식 사용 */
+#quickDate {
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%236d6bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+    background-repeat: no-repeat;
+    background-position: right 12px center;
+    background-size: 18px;
+}
+/* 날짜 입력창 스타일: 끝부분에 달력 아이콘 배치 */
+#quickDate {
+    appearance: none;
+    -webkit-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%236d6bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
+    background-repeat: no-repeat;
+    background-position: calc(100% - 12px) center;
+    background-size: 18px;
+    padding-right: 40px;
+    cursor: pointer;
+}
+
+/* 요일/날짜 헤더 스타일 */
+.col-header {
+    text-align: center;
+    padding-bottom: 5px;
+}
+
+.day-name {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--primary);
+    display: block;
+}
+
+.day-date {
+    font-size: 0.85rem;
+    color: var(--muted);
+}
+
+/* 🚩 구분선 스타일 */
+.col-divider {
+    border: 0;
+    height: 1px;
+    background: var(--line); /* 기존 테마의 라인 색상 사용 */
+    margin: 12px 0;
+}
+
+/* 할 일 목록 영역 */
+.task-list {
+    min-height: 100px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px; /* 카드 사이 간격 */
+}
+
+/* 할 일 카드 디자인 살짝 보강 */
+.task-item {
+    background: var(--card);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: transform 0.1s;
+}
+
+.task-item:hover {
+    border-color: var(--primary);
+}
+
+.empty-msg {
+    text-align: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+    margin-top: 20px;
+}
+/* 체크 버튼 기본 스타일 */
+.btn-check {
+    padding: 0 4px;
+    transition: transform 0.1s ease;
+    filter: grayscale(1);    /* 미완료 시에는 무채색 느낌 */
+    opacity: 0.5;            /* 평소에는 흐릿하게 */
+    user-select: none;       /* 이모지 클릭 시 텍스트 선택 방지 */
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 18px;
+}
+/* 체크 완료(active) 상태 스타일 */
+.btn-check.active {
+    filter: grayscale(0); /* 초록색 이모지 컬러 살리기 */
+    opacity: 1;
+    transform: scale(1.1);
+}
+/* 완료된 할 일 카드 전체 투명도 조절 (선택 사항) */
+.task-item.done {
+    background: rgba(255, 255, 255, 0.02);
+}
+/* 스킵된 버튼 스타일 */
+.btn-check.skipped {
+    filter: grayscale(1) opacity(0.5); /* 무채색에 약간 투명하게 */
+    cursor: default; /* 클릭 불가능한 느낌 */
+}
+/* 스킵된 아이템 전체 행 스타일 */
+.task-item.skipped {
+    background: rgba(255, 255, 255, 0.02); /* 배경을 아주 어둡게 */
+    border-left: 3px solid var(--muted); /* 옆에 회색 선으로 표시 */
+}
+
+/* 인라인 수정 중인 입력창 스타일 */
+.inline-edit-input {
+    width: 100%;
+    background: #1e2330 !important; /* 배경색 명시 */
+    color: white !important;        /* 글자색 명시 */
+    border: 1px solid var(--primary);
+    border-radius: 4px;
+    padding: 2px 6px;
+    font-size: inherit;
+    font-family: inherit;
+    outline: none;
+    caret-color: white !important;  /* 🚩 커서(깜빡이)를 흰색으로 강제 */
+    box-sizing: border-box;
+}
+
+/* 수정 중일 때 부모 컨테이너가 찌그러지지 않게 */
+.task-content {
+    display: flex;
+    align-items: center;
+    min-height: 32px;
+}
