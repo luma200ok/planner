@@ -84,32 +84,29 @@ public class PlannerService {
         taskRepository.deleteById(id);
     }
 
-    // 🚩 selectedDate 파라미터 추가
+    // 🚩 1. 템플릿 생성 시 12주치(84일)를 한 번에 미리 생성하도록 수정
     public void createTemplate(String title, TemplateRuleType ruleType, DayOfWeek dayOfWeek,
                                LocalDate selectedDate) {
         // 1. 템플릿 저장
         Template template = new Template(title, ruleType, dayOfWeek);
         templateRepository.save(template);
 
-        // 2. 버그 해결 핵심: LocalDate.now() 대신 파라미터로 받은 selectedDate를 사용!
-        // 만약 selectedDate가 null이면 방어 코드로 오늘 날짜 사용
+        // 2. 선택한 날짜(마감 날짜)가 속한 주의 일요일 계산 (이 주부터 시작!)
         LocalDate baseDate = (selectedDate != null) ? selectedDate : LocalDate.now();
-
-        // 3. 선택한 날짜가 속한 주의 일요일 계산
         LocalDate sunday = baseDate.with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
 
         List<Task> taskBasket = new ArrayList<>();
 
-        // 4. 해당 주의 7일간 돌면서 생성
-        for (int i = 0; i < 7; i++) {
+        // 3. 기존 7일 생성 -> 12주(84일)치 미리 생성으로 넉넉하게 확장
+        for (int i = 0; i < 84; i++) {
             LocalDate targetDate = sunday.plusDays(i);
 
-            // ruleType 설계도(matches)에게 물어봄
+            // ruleType 설계도에게 해당 요일이 맞는지 물어봄
             if (template.matches(targetDate)) {
                 taskBasket.add(new Task(template.getTitle(), targetDate, template));
             }
         }
-        taskRepository.saveAll(taskBasket); // 🚚 일괄 저장!
+        taskRepository.saveAll(taskBasket); // 일괄 저장
     }
 
     // 매주 템플릿 걸린 작업 재생성
@@ -117,10 +114,10 @@ public class PlannerService {
     @Scheduled(cron = "0 0 0 * * sun")
     @Transactional
     public void generateWeeklyTasksFromTemplates() {
-        List<Template> allTemplates = templateRepository.findAll();
+        // 기존 findAll() 대신 활성화된(active) 템플릿만 가져오기
+        List<Template> allTemplates = templateRepository.findAllByActiveTrue();
         LocalDate sunday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
 
-        // 1. 바구니(List)를 하나 준비합니다.
         List<Task> taskBasket = new ArrayList<>();
 
         for (Template template : allTemplates) {
@@ -128,12 +125,15 @@ public class PlannerService {
                 LocalDate targetDate = sunday.plusDays(i);
 
                 if (template.matches(targetDate)) {
-                    // 2. DB에 바로 저장하지 않고 바구니에 차곡차곡 담습니다.
-                    taskBasket.add(new Task(template.getTitle(), targetDate, template));
+                    // 🚩 핵심: 이미 해당 날짜에 이 템플릿으로 만든 할 일이 있는지 검사!
+                    boolean isExist = taskRepository.findByTemplateAndScheduledDate(template, targetDate).isPresent();
+
+                    if (!isExist) { // 🚩 없을 때만 바구니에 담기 (중복 충돌 완벽 방지)
+                        taskBasket.add(new Task(template.getTitle(), targetDate, template));
+                    }
                 }
             }
         }
-        // 3. 바구니가 다 찼으면 DB에 한 번에 배달합니다!
         taskRepository.saveAll(taskBasket);
     }
 

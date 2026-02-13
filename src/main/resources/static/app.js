@@ -34,6 +34,14 @@ function updateHeader() {
     }
 }
 
+// 매주 반복(WEEKLY)일 때만 요일 선택창 보여주기
+function toggleDaySelect() {
+    const rule = $("#newTemplateRuleType").value;
+    const daySelect = $("#newTemplateDay");
+    // WEEKLY면 보이고(block), 아니면 숨김(none)
+    daySelect.style.display = (rule === "WEEKLY") ? "block" : "none";
+}
+
 // API 호출 함수
 async function api(path, options = {}) {
     const url = path.startsWith("http") ? path : API_BASE + path;
@@ -103,11 +111,11 @@ function renderBoard(tasks) {
                     </button>
                 `;
             } else if (isSkipped) {
-                // ⏸️ 스킵됨
+                // ➖ 스킵됨
                 btnHtml = `
                     <button class="btn-skip active" onclick="event.stopPropagation(); undoTask(${t.id})" 
                             title="되돌리기" style="${btnStyle}">
-                        ⏸️
+                       ➖
                     </button>
                     <button class="btn-delete" onclick="event.stopPropagation(); deleteTask(${t.id})" 
                             title="삭제" style="${btnStyle}">
@@ -119,11 +127,11 @@ function renderBoard(tasks) {
                 btnHtml = `
                     <button class="btn-check" onclick="event.stopPropagation(); completeTask(${t.id})" 
                             title="완료하기" style="${btnStyle}">
-                        ⬜
+                        ☑️
                     </button>
                     <button class="btn-skip" onclick="event.stopPropagation(); skipTask(${t.id})" 
                             title="건너뛰기" style="${btnStyle}">
-                        ⏭️
+                        ➡️
                     </button>
                     <button class="btn-delete" onclick="event.stopPropagation(); deleteTask(${t.id})" 
                             title="삭제" style="${btnStyle}">
@@ -167,17 +175,39 @@ async function refresh() {
 }
 
 async function handleCreateTask() {
-    const title = $("#taskTitle").value;
-    const date = $("#taskDate").value || fmtDate(new Date());
+    const title = $("#quickTitle").value;
+    const date = $("#quickDate").value || fmtDate(new Date());
+    const rule = $("#quickRule") ? $("#quickRule").value : "NONE";
+
     if (!title) return alert("할 일을 입력하세요");
 
     try {
-        await api("/tasks", {
-            method: "POST",
-            body: JSON.stringify({ title, date })
-        });
-        $("#taskTitle").value = "";
-        refresh();
+        if (rule === "NONE") {
+            // 🚩 1. 반복 없음: 기존처럼 단일 할 일 생성 API 호출
+            await api("/tasks", {
+                method: "POST",
+                body: JSON.stringify({
+                    title: title,
+                    date: date
+                })
+            });
+        } else {
+            // 🚩 2. 반복 있음(DAILY, WEEKDAYS, WEEKENDS): 템플릿 생성 API 호출!
+            // 이렇게 해야 백엔드 로직을 타고 이번 주 해당 요일들에 쫙 깔립니다.
+            await api("/templates", {
+                method: "POST",
+                body: JSON.stringify({
+                    title: title,
+                    ruleType: rule,
+                    date: date,
+                    dayOfWeek: null // 단일 요일이 아니므로 null 전송
+                })
+            });
+        }
+
+        // 성공 시 UI 초기화
+        $("#quickTitle").value = "";
+        refresh(); // 보드 새로고침
     } catch (e) {
         alert("생성 실패: " + e.message);
     }
@@ -232,9 +262,80 @@ document.addEventListener("DOMContentLoaded", () => {
         };
     }
 
+    if ($("#btnCreateTemplate")) {
+        $("#btnCreateTemplate").onclick = createCustomTemplate;
+    }
+
     if ($("#applyFilter")) {
         $("#applyFilter").onclick = refresh;
     }
 
+    // 🚩 [여기서부터 추가] 모달 열기/닫기 이벤트 연결
+    const modal = $("#modalBackdrop");
+
+    // 1. 템플릿 관리 열기 버튼 클릭 시
+    if ($("#openTemplateModal")) {
+        $("#openTemplateModal").onclick = () => {
+            modal.classList.remove("hidden");
+        };
+    }
+
+    // 2. 모달 내 닫기 버튼 클릭 시
+    if ($("#closeModal")) {
+        $("#closeModal").onclick = () => {
+            modal.classList.add("hidden");
+        };
+    }
+
+    // 3. 모달 바깥 배경 클릭 시 닫기
+    if (modal) {
+        modal.onclick = (e) => {
+            if (e.target === modal) {
+                modal.classList.add("hidden");
+            }
+        };
+    }
     refresh(); // 시작 시 데이터 로드
 });
+
+// 🚩 템플릿 생성 API 호출 (다중 요일 지원)
+async function createCustomTemplate() {
+    const title = $("#newTemplateName").value;
+
+    // 1. 체크된 체크박스들의 value(요일)를 배열로 모음 ['MONDAY', 'WEDNESDAY', ...]
+    const checkedDays = Array.from(document.querySelectorAll('#dayCheckboxes input:checked')).map(cb => cb.value);
+
+    // 2. 방어 로직
+    if (!title) return alert("템플릿 이름을 입력하세요");
+    if (checkedDays.length === 0) return alert("최소 하나의 요일을 선택하세요");
+
+    try {
+        // 3. 선택된 요일 개수만큼 백엔드로 POST 요청을 만듦
+        // (백엔드 수정 없이, 기존 1요일 1템플릿 구조를 활용하는 프론트엔드 트릭)
+        const promises = checkedDays.map(day => {
+            return api("/templates", {
+                method: "POST",
+                body: JSON.stringify({
+                    title: title,
+                    ruleType: "WEEKLY", // 백엔드에는 무조건 주간 반복으로 전달
+                    dayOfWeek: day,     // 각기 다른 요일 전달
+                    date: fmtDate(new Date())
+                })
+            });
+        });
+
+        // 4. 병렬로 모든 요청을 한 번에 전송하고 기다림
+        await Promise.all(promises);
+
+        alert(`${checkedDays.length}개의 요일에 템플릿이 성공적으로 등록되었습니다!`);
+
+        // 5. 성공 후 UI 초기화
+        $("#newTemplateName").value = "";
+        document.querySelectorAll('#dayCheckboxes input:checked').forEach(cb => cb.checked = false);
+        refresh(); // 보드 새로고침
+
+    } catch (e) {
+        console.error(e);
+        alert("템플릿 생성 중 오류가 발생했습니다.");
+    }
+}
