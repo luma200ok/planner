@@ -63,3 +63,4 @@
 * AssertJ: `assertThat().isEqualTo()` 같은 문법을 써서 영어 문장처럼 읽히는 깔끔한 테스트 코드를 작성했습니다.
 
 ---
+update 26.02.13

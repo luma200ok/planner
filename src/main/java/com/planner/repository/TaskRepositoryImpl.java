@@ -19,7 +19,7 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom{
 
     @Override
     public List<Task> searchTasks(LocalDate from, LocalDate to, TaskStatus status, String keyword) {
-        return queryFactory.select(task)
+        return queryFactory.selectFrom(task)
                 .where(
                         task.scheduledDate.between(from, to),
                         statusEq(status),
@@ -27,6 +27,7 @@ public class TaskRepositoryImpl implements TaskRepositoryCustom{
                 )
                 .fetch();
     }
+
     // 조건부 쿼리를 위한 BooleanExpression 메서드들
     private BooleanExpression statusEq(TaskStatus status) {
         return status != null ? task.status.eq(status) : null;

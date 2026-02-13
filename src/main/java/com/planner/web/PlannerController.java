@@ -29,12 +29,12 @@ public class PlannerController {
 
     private final PlannerService plannerService;
 
+//    public record TemplateRequest(String title, TemplateRuleType ruleType, DayOfWeek dayOfWeek,LocalDate selectedDate) {}
     public record TaskResponse(Long id, String title, TaskStatus status, LocalDate date) {}
     public record CloseRequest(LocalDate date, boolean carryOver) {}
 
     public record CreateRequest(String title, LocalDate date) {}
     public record UpdateRequest(String title) {}
-    public record TemplateRequest(String title, TemplateRuleType ruleType, DayOfWeek dayOfWeek,LocalDate selectedDate) {}
     public record TemplateCreateRequest(
             String title,
             TemplateRuleType ruleType,
@@ -55,16 +55,25 @@ public class PlannerController {
 
     // 프론트엔드 보드 출력을 위한 목록 조회 API
     @GetMapping("/tasks")
-    public List<TaskResponse> list(@RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
-                                   @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to) {
-        return plannerService.getTasks(from, to).stream()
+    public List<TaskResponse> list(
+            // 🚩 value 이름을 명시하여 스프링이 파라미터를 확실히 찾게 합니다.
+            @RequestParam(value = "from") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate from,
+            @RequestParam(value = "to") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate to,
+            @RequestParam(value = "status", required = false) TaskStatus status
+    ) {
+        // 🚩 서비스로 status를 넘겨줍니다.
+        return plannerService.getTasks(from, to, status).stream()
                 .map(t -> new TaskResponse(t.getId(), t.getTitle(), t.getStatus(), t.getScheduledDate()))
                 .toList();
     }
-
     @DeleteMapping("/tasks/{id}")
     public void delete(@PathVariable Long id) {
         plannerService.deleteTask(id);
+    }
+
+    @PostMapping("/day-close")
+    public void close(@RequestBody CloseRequest req) {
+        plannerService.closeDay(req.date(), req.carryOver());
     }
 
     @PostMapping("/tasks/{id}/complete")
@@ -72,9 +81,14 @@ public class PlannerController {
         plannerService.completeTask(id);
     }
 
-    @PostMapping("/day-close")
-    public void close(@RequestBody CloseRequest req) {
-        plannerService.closeDay(req.date(), req.carryOver());
+    @PostMapping("/tasks/{id}/skip")
+    public void skip(@PathVariable Long id) {
+        plannerService.skipTask(id);
+    }
+
+    @PostMapping("/tasks/{id}/undo")
+    public void undo(@PathVariable Long id) {
+        plannerService.undoTask(id);
     }
 
     @PostMapping("/templates")

@@ -59,7 +59,7 @@ public class Task {
         this.title = title;
     }
 
-    public void undoComplete() {
+    public void undoTask() {
         this.status = TaskStatus.PLANNED;
         this.completedAt = null; // 완료 시간 초기화
     }

@@ -42,19 +42,32 @@ public class PlannerService {
     // PlannerService.java 의 completeTask 메서드를 수정
     public void completeTask(Long id) {
         Task task = taskRepository.findById(id).orElseThrow();
+        task.complete(LocalDateTime.now());
+    }
 
-        if (task.getStatus() == TaskStatus.DONE) {
-            // 이미 완료 상태면 다시 계획됨 상태로 되돌리기 (Off)
-            task.undoComplete();
-        } else {
-            // 아니면 완료 처리하기 (On)
-            task.complete(LocalDateTime.now());
-        }
+    @Transactional
+    public void skipTask(Long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 할 일입니다."));
+
+        // Task 엔티티의 skip 메서드 호출 (이미 만들어두셨음)
+        task.skip(LocalDateTime.now());
+    }
+
+    @Transactional
+    public void undoTask(Long id) {
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 할 일입니다."));
+
+        // 완료든 스킵이든 무조건 '계획됨(PLANNED)' 상태로 리셋합니다.
+        task.undoTask();
     }
 
     @Transactional(readOnly = true)
-    public List<Task> getTasks(LocalDate from, LocalDate to) {
-        return taskRepository.findAllByScheduledDateBetween(from, to);
+    // 🚩 status 인자 추가 확인
+    public List<Task> getTasks(LocalDate from, LocalDate to, TaskStatus status) {
+        // 🚩 기존 findAll... 대신, 방금 고친 searchTasks를 호출합니다.
+        return taskRepository.searchTasks(from, to, status, null);
     }
 
     // 할 일 내용 수정
@@ -116,11 +129,12 @@ public class PlannerService {
 
                 if (template.matches(targetDate)) {
                     // 2. DB에 바로 저장하지 않고 바구니에 차곡차곡 담습니다.
-                    taskBasket.add(new Task(template.getTitle(), targetDate,template));
+                    taskBasket.add(new Task(template.getTitle(), targetDate, template));
                 }
             }
         }
         // 3. 바구니가 다 찼으면 DB에 한 번에 배달합니다!
         taskRepository.saveAll(taskBasket);
     }
+
 }
