@@ -97,8 +97,8 @@ public class PlannerService {
 
         List<Task> taskBasket = new ArrayList<>();
 
-        // 3. 기존 7일 생성 -> 12주(84일)치 미리 생성으로 넉넉하게 확장
-        for (int i = 0; i < 84; i++) {
+        // 3. 7일 생성 -> 지연 생성 원칙으로 매주 일요일 00 시에 새로 갱신
+        for (int i = 0; i < 7; i++) {
             LocalDate targetDate = sunday.plusDays(i);
 
             // ruleType 설계도에게 해당 요일이 맞는지 물어봄
