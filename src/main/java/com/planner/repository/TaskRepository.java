@@ -11,6 +11,5 @@ import java.util.Optional;
 
 public interface TaskRepository extends JpaRepository<Task, Long>, TaskRepositoryCustom {
     List<Task> findAllByScheduledDateAndStatus(LocalDate date, TaskStatus status);
-    List<Task> findAllByScheduledDateBetween(LocalDate from, LocalDate to); // 추가됨
     Optional<Task> findByTemplateAndScheduledDate(Template template, LocalDate date);
 }

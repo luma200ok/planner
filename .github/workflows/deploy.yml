@@ -60,5 +60,5 @@ jobs:
               nohup java -jar *-SNAPSHOT.jar \
                 --spring.profiles.active=prod \
                 --spring.datasource.password=$DB_PASSWORD \
-                --spring.jpa.hibernate.ddl-auto=update \
+                --spring.jpa.hibernate.ddl-auto=validate \
                 > planner.log 2>&1

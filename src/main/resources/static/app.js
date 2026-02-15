@@ -1,4 +1,11 @@
-const API_BASE = "http://rkqkdrnportfolio.shop:8081/api/v1/planner";
+// 현재 브라우저가 켜진 주소(도메인)를 확인합니다.
+const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
+
+// 로컬이면 localhost:8080, 아니면 운영 서버 주소로 자동 설정
+const API_BASE = isLocal
+    ? "http://localhost:8081/api/v1/planner"
+    : "http://rkqkdrnportfolio.shop:8081/api/v1/planner";
+
 const $ = (s) => document.querySelector(s);
 
 // 1. 날짜 유틸리티
