@@ -1,564 +1,238 @@
+/* 1. 다크 모드 색상 정의 */
 :root {
-    --bg: #0b0d12;
-    --panel: #121622;
-    --card: #151a28;
-    --text: #e7e9ee;
-    --muted: #a7afc2;
-    --line: #232a3b;
-    --primary: #6d6bff;
-    --good: #32d583;
-    --warn: #fdb022;
-    --bad: #f97066;
-    --shadow: 0 16px 40px rgba(0, 0, 0, .35);
-    --r: 16px;
+    --bg-main: #11121F;       /* 전체 배경 */
+    --bg-panel: #161725;      /* 패널(사이드바) 배경 */
+    --bg-card: #1C1D2E;       /* 카드 배경 */
+    --bg-column: rgba(255, 255, 255, 0.02); /* 컬럼 배경 */
+
+    --text-main: #EAEAEA;
+    --text-sub: #8B8C9E;
+    --text-muted: #5d5e6b;
+
+    --border: #2F3045;        /* 테두리 선 색상 */
+
+    --primary: #5C7CFA;       /* 파란색 (Planned) */
+    --success: #4CAF50;       /* 초록색 (Done) */
+    --warn: #E05D5D;          /* 빨간색 (Skipped) */
+
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
 }
 
-* {
-    box-sizing: border-box
-}
+* { box-sizing: border-box; outline: none; }
 
-html, body {
-    height: 100%
-}
-
+/* 2. 전체 레이아웃 */
+html, body { height: 100%; margin: 0; padding: 0; }
 body {
-    margin: 0;
-    font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial, "Apple SD Gothic Neo";
-    background: radial-gradient(1200px 600px at 20% 0%, #161b2a, transparent),
-    radial-gradient(900px 500px at 80% 10%, #1b1430, transparent),
-    var(--bg);
-    color: var(--text);
-}
-
-.topbar {
-    display: flex;
-    gap: 16px;
-    align-items: center;
-    justify-content: space-between;
-    padding: 16px 18px;
-    border-bottom: 1px solid var(--line);
-    position: sticky;
-    top: 0;
-    backdrop-filter: blur(10px);
-    background: rgba(11, 13, 18, .65);
-    z-index: 5;
-}
-
-.brand {
-    display: flex;
-    gap: 12px;
-    align-items: center;
-}
-
-.logo {
-    width: 40px;
-    height: 40px;
-    border-radius: 12px;
-    display: grid;
-    place-items: center;
-    background: linear-gradient(135deg, var(--primary), #2dd4bf);
-    color: #0b0d12;
-    font-weight: 900;
-}
-
-.title {
-    font-weight: 800;
-    letter-spacing: .2px
-}
-
-.sub {
-    font-size: 12px;
-    color: var(--muted)
-}
-
-.week-nav {
-    display: flex;
-    gap: 10px;
-    align-items: center
-}
-
-.week-label {
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Pretendard', sans-serif;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    min-width: 220px
 }
 
-.week-range {
-    font-weight: 800
-}
-
-.week-meta {
-    font-size: 12px;
-    color: var(--muted)
-}
-
-.layout {
-    display: grid;
-    grid-template-columns: 360px 1fr;
-    gap: 16px;
-    padding: 16px;
-}
-
-.panel {
-    background: rgba(18, 22, 34, .7);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    padding: 14px;
-    box-shadow: var(--shadow);
-    height: fit-content;
-}
-
-.board-wrap {
-    background: rgba(18, 22, 34, .4);
-    border: 1px solid var(--line);
-    border-radius: var(--r);
-    padding: 14px;
-    box-shadow: var(--shadow);
-    min-height: 70vh;
-}
-
-.board-head {
+/* 상단 헤더 */
+.topbar {
+    height: 60px;
+    border-bottom: 1px solid var(--border);
+    background-color: var(--bg-main);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-bottom: 10px
+    padding: 0 20px;
+    flex-shrink: 0; /* 헤더 크기 고정 */
 }
-
-.h2 {
-    margin: 10px 0 8px;
-    font-size: 16px
+.brand { display: flex; align-items: center; gap: 10px; font-weight: bold; font-size: 1.2rem; }
+.logo {
+    width: 32px; height: 32px;
+    background: var(--primary); color: white;
+    border-radius: 8px; display: grid; place-items: center;
 }
+.week-nav { display: flex; align-items: center; gap: 10px; }
 
-.h3 {
-    margin: 0 0 10px;
-    font-size: 14px
-}
-
-.label {
-    font-size: 12px;
-    color: var(--muted);
-    display: block;
-    margin: 10px 0 6px
-}
-
-.hint {
-    font-size: 12px;
-    color: var(--muted);
-    margin-top: 8px;
-    line-height: 1.4
-}
-
-.card {
-    background: rgba(21, 26, 40, .8);
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    padding: 12px;
-    margin: 10px 0;
-}
-
-.row {
+/* 메인 영역 (사이드바 + 보드) */
+.layout {
+    flex: 1;
     display: flex;
-    gap: 10px;
-    align-items: flex-end
+    overflow: hidden; /* 전체 스크롤 방지 */
 }
 
-.col {
-    flex: 1
+/* 왼쪽 사이드바 */
+.panel {
+    width: 320px;
+    background-color: var(--bg-panel);
+    border-right: 1px solid var(--border);
+    padding: 20px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    flex-shrink: 0; /* 사이드바 너비 고정 */
 }
 
+/* 입력폼 스타일 */
+.h2 { font-size: 14px; color: var(--text-sub); margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 0.5px; }
+.card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 15px;
+}
+.label { display: block; font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
 .input {
     width: 100%;
-    padding: 10px 12px;
-    border-radius: 12px;
-    border: 1px solid var(--line);
-    background: rgba(9, 11, 16, .8);
-    color: var(--text);
-    outline: none;
+    background: var(--bg-main);
+    border: 1px solid var(--border);
+    color: white;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
 }
+.row { display: flex; gap: 10px; }
+.col { flex: 1; }
 
-.input:focus {
-    border-color: rgba(109, 107, 255, .7)
-}
-
+/* 버튼 공통 */
 .btn {
-    padding: 10px 12px;
+    padding: 10px; border-radius: 6px; border: none; font-weight: bold; cursor: pointer;
+    text-align: center; font-size: 13px; transition: opacity 0.2s;
+}
+.btn:hover { opacity: 0.8; }
+.btn.primary { background-color: var(--primary); color: white; }
+.btn.warn, #runSchedulerBtn {
+    background-color: rgba(109, 107, 255, 0.1) !important; /* 연한 보라색 배경 */
+    color: #8b89ff !important;                         /* 보라색 글자 */
+    border: 1px solid #6d6bff !important;               /* 메인 보라색 테두리 */
+    transition: all 0.2s ease;
+}
+
+.btn.warn:hover, #runSchedulerBtn:hover {
+    background-color: rgba(109, 107, 255, 0.2) !important; /* 호버 시 배경 살짝 진하게 */
+    border-color: #8b89ff !important;
+    color: #ffffff !important;                         /* 호버 시 글자 흰색으로 강조 */
+    box-shadow: 0 0 10px rgba(109, 107, 255, 0.3);      /* 보라색 네온 효과 */
+}
+
+/* 사이드바 내부 버튼 배치 간격 정렬 */
+.panel .card {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+/* 3. 보드 영역 (가로 스크롤 핵심) */
+#board {
+    flex: 1;
+    display: flex;           /* 가로 배치 */
+    overflow-x: auto;        /* 내용 넘치면 스크롤 */
+    overflow-y: hidden;
+    padding: 20px;
+    gap: 15px;
+    background-color: var(--bg-main);
+    align-items: flex-start; /* 위쪽 정렬 */
+}
+
+/* 요일 컬럼 (찌그러짐 방지) */
+.column {
+    min-width: 280px;        /* ⭐ 최소 너비 고정 */
+    width: 280px;
+    flex-shrink: 0;          /* ⭐ 화면 좁아도 절대 줄어들지 않음 (겹침 해결) */
+    background-color: var(--bg-column);
+    border: 1px solid var(--border);
     border-radius: 12px;
-    border: 1px solid var(--line);
-    background: rgba(9, 11, 16, .7);
-    color: var(--text);
-    cursor: pointer;
-}
-
-.btn:hover {
-    border-color: rgba(109, 107, 255, .5)
-}
-
-.btn.primary {
-    background: linear-gradient(135deg, var(--primary), #2dd4bf);
-    color: #0b0d12;
-    border: none;
-    font-weight: 800;
-}
-
-.btn.ghost {
-    background: transparent
-}
-
-.pill {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    border: 1px solid var(--line);
-    padding: 8px 10px;
-    border-radius: 999px;
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--good)
-}
-
-.board {
-    display: grid;
-    grid-template-columns: repeat(7, minmax(170px, 1fr));
-    gap: 10px;
-    overflow: auto;
-    padding-bottom: 8px;
-}
-
-.day {
-    border: 1px solid var(--line);
-    border-radius: 14px;
-    background: rgba(21, 26, 40, .6);
-    min-height: 520px;
     display: flex;
     flex-direction: column;
+    height: 100%;            /* 높이 꽉 채우기 */
 }
 
-.day-head {
-    padding: 10px 10px 8px;
-    border-bottom: 1px solid var(--line);
+.column-header {
+    padding: 15px;
+    border-bottom: 1px solid var(--border);
     display: flex;
     justify-content: space-between;
-    align-items: flex-start;
-    gap: 8px;
+    align-items: baseline;
+    font-weight: bold;
 }
+.day-name { font-size: 16px; color: var(--text-main); }
+.day-date { font-size: 12px; color: var(--text-sub); }
 
-.day-title {
-    font-weight: 800;
-    font-size: 13px
-}
-
-.day-date {
-    font-size: 12px;
-    color: var(--muted)
-}
-
-.day-count {
-    font-size: 12px;
-    color: var(--muted)
-}
-
-.day-body {
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px
-}
-
-.task {
-    border: 1px solid var(--line);
-    background: rgba(9, 11, 16, .6);
-    border-radius: 14px;
-    padding: 10px;
-}
-
-.task-top {
-    display: flex;
-    justify-content: space-between;
-    gap: 10px;
-    align-items: flex-start
-}
-
-.task-title {
-    font-weight: 800;
-    font-size: 13px;
-    line-height: 1.35
-}
-
-.badge {
-    font-size: 11px;
-    padding: 4px 8px;
-    border-radius: 999px;
-    border: 1px solid var(--line);
-    color: var(--muted);
-}
-
-.badge.planned {
-    border-color: rgba(109, 107, 255, .5);
-    color: #c9c8ff
-}
-
-.badge.done {
-    border-color: rgba(50, 213, 131, .5);
-    color: #aaf2cf
-}
-
-.badge.skipped {
-    border-color: rgba(249, 112, 102, .5);
-    color: #ffd0cc
-}
-
-.task-meta {
-    margin-top: 8px;
-    font-size: 12px;
-    color: var(--muted);
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap
-}
-
-.task-actions {
-    margin-top: 10px;
-    display: flex;
-    gap: 8px;
-    flex-wrap: wrap
-}
-
-.task-actions .btn {
-    padding: 8px 10px;
-    font-size: 12px
-}
-
-.list {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
-    margin-top: 10px
-}
-
-.list-item {
-    border: 1px solid var(--line);
-    border-radius: 12px;
-    padding: 10px;
-    background: rgba(9, 11, 16, .5);
-    color: var(--muted);
-    font-size: 12px;
-}
-
-.modal-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, .55);
-    display: grid;
-    place-items: center;
-    z-index: 20;
-}
-
-.hidden {
-    display: none
-}
-
-.modal {
-    width: min(980px, 92vw);
-    max-height: 86vh;
-    overflow: auto;
-    background: rgba(18, 22, 34, .95);
-    border: 1px solid var(--line);
-    border-radius: 18px;
-    box-shadow: var(--shadow);
-}
-
-.modal-head {
-    padding: 14px 16px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-bottom: 1px solid var(--line);
-}
-
-.modal-title {
-    font-weight: 900
-}
-
-.modal-sub {
-    font-size: 12px;
-    color: var(--muted)
-}
-
-.modal-body {
-    padding: 14px 16px
-}
-
-.grid2 {
-    display: grid;
-    grid-template-columns:1fr 1fr;
-    gap: 12px
-}
-
-@media (max-width: 1060px) {
-    .layout {
-        grid-template-columns:1fr
-    }
-
-    .board {
-        grid-template-columns: repeat(2, minmax(170px, 1fr));
-    }
-
-    .grid2 {
-        grid-template-columns:1fr
-    }
-}
-
-/* 날짜 입력창 스타일 보강 */
-.input[type="date"] {
-    position: relative;
-    padding-right: 40px; /* 아이콘 공간 확보 */
-    cursor: pointer;
-}
-
-/* 브라우저 기본 달력 아이콘 스타일 커스텀 (크롬, 엣지용) */
-.input[type="date"]::-webkit-calendar-picker-indicator {
-    position: absolute;
-    right: 12px;
-    top: 50%;
-    transform: translateY(-50%);
-    cursor: pointer;
-    /* 달력 모양 아이콘 강조 */
-    filter: invert(0.5); /* 어두운 테마라면 흰색 계열로 변경 */
-}
-
-/* 만약 아이콘을 완전히 새로 넣고 싶다면 배경 이미지 방식 사용 */
-#quickDate {
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="%236d6bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
-    background-repeat: no-repeat;
-    background-position: right 12px center;
-    background-size: 18px;
-}
-/* 날짜 입력창 스타일: 끝부분에 달력 아이콘 배치 */
-#quickDate {
-    appearance: none;
-    -webkit-appearance: none;
-    background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="%236d6bff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>');
-    background-repeat: no-repeat;
-    background-position: calc(100% - 12px) center;
-    background-size: 18px;
-    padding-right: 40px;
-    cursor: pointer;
-}
-
-/* 요일/날짜 헤더 스타일 */
-.col-header {
-    text-align: center;
-    padding-bottom: 5px;
-}
-
-.day-name {
-    font-size: 1.1rem;
-    font-weight: 700;
-    color: var(--primary);
-    display: block;
-}
-
-.day-date {
-    font-size: 0.85rem;
-    color: var(--muted);
-}
-
-/* 🚩 구분선 스타일 */
-.col-divider {
-    border: 0;
-    height: 1px;
-    background: var(--line); /* 기존 테마의 라인 색상 사용 */
-    margin: 12px 0;
-}
-
-/* 할 일 목록 영역 */
 .task-list {
-    min-height: 100px;
+    flex: 1;
+    padding: 10px;
+    overflow-y: auto;        /* 세로 스크롤 */
     display: flex;
     flex-direction: column;
-    gap: 10px; /* 카드 사이 간격 */
+    gap: 10px;
 }
 
-/* 할 일 카드 디자인 살짝 보강 */
-.task-item {
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 8px;
-    padding: 10px;
+/* 4. 태스크 카드 디자인 (요청하신 스타일) */
+.task-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 15px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.2);
     display: flex;
-    justify-content: space-between;
-    align-items: center;
-    transition: transform 0.1s;
+    flex-direction: column;
+    gap: 10px;
+    transition: transform 0.2s;
 }
-
-.task-item:hover {
+.task-card:hover {
+    transform: translateY(-2px);
     border-color: var(--primary);
 }
 
-.empty-msg {
-    text-align: center;
-    color: var(--muted);
-    font-size: 0.8rem;
-    margin-top: 20px;
+.card-header { display: flex; justify-content: space-between; align-items: flex-start; }
+.card-title { font-weight: 600; font-size: 15px; color: var(--text-main); cursor: pointer; }
+.card-title.done-text { text-decoration: line-through; color: var(--text-muted); }
+
+/* 뱃지 */
+.badge {
+    font-size: 10px; padding: 4px 8px; border-radius: 12px; font-weight: bold;
+    text-transform: uppercase; border: 1px solid transparent;
 }
-/* 체크 버튼 기본 스타일 */
-.btn-check {
-    padding: 0 4px;
-    transition: transform 0.1s ease;
-    filter: grayscale(1);    /* 미완료 시에는 무채색 느낌 */
-    opacity: 0.5;            /* 평소에는 흐릿하게 */
-    user-select: none;       /* 이모지 클릭 시 텍스트 선택 방지 */
-    background: none;
-    border: none;
+.badge.planned { color: var(--primary); background: rgba(92, 124, 250, 0.1); border-color: var(--primary); }
+.badge.done { color: var(--success); background: rgba(76, 175, 80, 0.1); border-color: var(--success); }
+.badge.skipped { color: var(--warn); background: rgba(224, 93, 93, 0.1); border-color: var(--warn); }
+
+/* 메타 정보 */
+.card-meta { font-size: 11px; color: var(--text-sub); display: flex; flex-direction: column; gap: 2px; }
+
+/* 텍스트 알약 버튼 */
+.card-actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 5px; }
+.btn-pill {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 11px;
     cursor: pointer;
-    font-size: 18px;
+    transition: all 0.2s;
 }
-/* 체크 완료(active) 상태 스타일 */
-.btn-check.active {
-    filter: grayscale(0); /* 초록색 이모지 컬러 살리기 */
-    opacity: 1;
-    transform: scale(1.1);
-}
-/* 완료된 할 일 카드 전체 투명도 조절 (선택 사항) */
-.task-item.done {
-    background: rgba(255, 255, 255, 0.02);
-}
-/* 스킵된 버튼 스타일 */
-.btn-check.skipped {
-    filter: grayscale(1) opacity(0.5); /* 무채색에 약간 투명하게 */
-    cursor: default; /* 클릭 불가능한 느낌 */
-}
-/* 스킵된 아이템 전체 행 스타일 */
-.task-item.skipped {
-    background: rgba(255, 255, 255, 0.02); /* 배경을 아주 어둡게 */
-    border-left: 3px solid var(--muted); /* 옆에 회색 선으로 표시 */
+.btn-pill:hover {
+    border-color: var(--text-main);
+    color: var(--text-main);
+    background: rgba(255,255,255,0.05);
 }
 
-/* 인라인 수정 중인 입력창 스타일 */
-.inline-edit-input {
-    width: 100%;
-    background: #1e2330 !important; /* 배경색 명시 */
-    color: white !important;        /* 글자색 명시 */
-    border: 1px solid var(--primary);
-    border-radius: 4px;
-    padding: 2px 6px;
-    font-size: inherit;
-    font-family: inherit;
-    outline: none;
-    caret-color: white !important;  /* 🚩 커서(깜빡이)를 흰색으로 강제 */
-    box-sizing: border-box;
+/* 5. 모달 및 유틸 */
+.modal-backdrop {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.7);
+    display: flex; justify-content: center; align-items: center; z-index: 100;
 }
+.modal {
+    background: var(--bg-panel);
+    width: 500px;
+    max-height: 80vh;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid var(--border);
+    overflow-y: auto;
+}
+.modal-header { display: flex; justify-content: space-between; margin-bottom: 20px; }
+.hidden { display: none !important; }
 
-/* 수정 중일 때 부모 컨테이너가 찌그러지지 않게 */
-.task-content {
-    display: flex;
-    align-items: center;
-    min-height: 32px;
-}
+/* 스크롤바 커스텀 */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-thumb { background: #3b3d54; border-radius: 4px; }
+::-webkit-scrollbar-track { background: var(--bg-main); }

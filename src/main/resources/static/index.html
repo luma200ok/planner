@@ -5,6 +5,112 @@
     <meta name="viewport" content="width=device-width, initial-scale=1"/>
     <title>Planner</title>
     <link rel="stylesheet" href="./app.css"/>
+    <style>
+        /* 기본 다크 테마 */
+        :root {
+            --bg-main: #11121F;
+            --bg-card: #1C1D2E;
+            --border: #2F3045;
+            --text-main: #EAEAEA;
+            --text-sub: #8B8C9E;
+            --blue: #5C7CFA;
+            --green: #4CAF50;
+            --red: #E05D5D;
+        }
+
+        body {
+            background-color: var(--bg-main);
+            color: var(--text-main);
+            font-family: 'Pretendard', sans-serif;
+        }
+
+        /* 카드 디자인 (여기만 바꾸면 됩니다) */
+        .task-card {
+            background-color: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            transition: transform 0.2s;
+        }
+        .task-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--blue);
+        }
+
+        /* 상단: 제목 + 뱃지 */
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 8px;
+        }
+        .card-title {
+            font-weight: 600;
+            font-size: 15px;
+            color: var(--text-main);
+            line-height: 1.4;
+            cursor: pointer;
+        }
+        .card-title.done-text {
+            text-decoration: line-through;
+            color: #5d5e6b;
+        }
+
+        /* 상태 뱃지 */
+        .badge {
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            border: 1px solid transparent;
+            white-space: nowrap;
+        }
+        .badge.planned { color: var(--blue); border-color: var(--blue); background: rgba(92, 124, 250, 0.1); }
+        .badge.done { color: var(--green); border-color: var(--green); background: rgba(76, 175, 80, 0.1); }
+        .badge.skipped { color: var(--red); border-color: var(--red); background: rgba(224, 93, 93, 0.1); }
+
+        /* 메타 정보 */
+        .card-meta {
+            font-size: 11px;
+            color: var(--text-sub);
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        /* 하단 버튼 그룹 (텍스트 알약 버튼) */
+        .card-actions {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+        .btn-pill {
+            background: transparent;
+            border: 1px solid #3b3d54;
+            color: var(--text-sub);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .btn-pill:hover {
+            border-color: var(--text-main);
+            color: var(--text-main);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* 레이아웃 보조 */
+        .column { min-width: 260px; margin-right: 15px; }
+        .column-header { display: flex; justify-content: space-between; padding-bottom: 10px; border-bottom: 1px solid var(--border); margin-bottom: 10px; font-weight: bold; }
+        .day-date { font-size: 12px; color: var(--text-sub); }
+    </style>
 </head>
 <body>
 <header class="topbar">
