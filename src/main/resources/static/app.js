@@ -253,3 +253,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
     refresh();
 });
+
+// ✨ 추가된 부분: 메뉴 토글 기능
+document.getElementById('menu-toggle').addEventListener('click', () => {
+    document.querySelector('.panel').classList.toggle('open');
+});
+
+// 외부 클릭 시 닫기 기능 (편의성)
+document.addEventListener('click', (e) => {
+    const panel = document.querySelector('.panel');
+    const menuBtn = document.getElementById('menu-toggle');
+    if (panel.classList.contains('open') && !panel.contains(e.target) && e.target !== menuBtn) {
+        panel.classList.remove('open');
+    }
+});
