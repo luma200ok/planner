@@ -40,5 +40,6 @@ jobs:
             key: ${{ secrets.EC2_SSH_KEY }}
             script: |
               sudo fuser -k 8081/tcp || true
-              nohup java -jar ~/planner/todeploy/build/libs/*.jar > ~/planner/app.log 2>&1 &
-              sleep 2
+              cd ~/planner/todeploy/build/libs
+              nohup java -jar *.jar --server.port=8081 > ~/planner/app.log 2>&1 &
+              sleep 5
