@@ -27,7 +27,7 @@ jobs:
           host: ${{ secrets.EC2_HOST }}
           username: ec2-user
           key: ${{ secrets.EC2_SSH_KEY }}
-          source: "build/libs/*.jar"
+          source: "build/libs/*-SNAPSHOT.jar" # -plain.jar는 제외하고 가져옵니다.
           # 지정하신 신규 경로로 전송합니다.
           target: "/home/ec2-user/apps/planner-new"
           strip_components: 2
@@ -49,5 +49,5 @@ jobs:
             mv planner.log planner.log.bak || true
             
             # 4. 새 JAR 파일 실행
-            # (로그는 해당 폴더 내 planner.log에 기록됩니다.)
-            nohup java -jar *.jar > planner.log 2>&1 &
+            # plain이 붙지 않은 jar 파일만 실행하도록 변경
+            nohup java -jar /home/ec2-user/apps/planner-new/*-SNAPSHOT.jar > /home/ec2-user/apps/planner-new/planner.log 2>&1 &
