@@ -1,4 +1,4 @@
-const API_BASE = "http://localhost:8081/api/v1/planner";
+const API_BASE = "http://rkqkdrnportfolio.shop:8081/api/v1/planner";
 const $ = (s) => document.querySelector(s);
 
 // 1. 날짜 유틸리티
