@@ -84,7 +84,7 @@ public class PlannerService {
         taskRepository.deleteById(id);
     }
 
-    // 🚩 1. 템플릿 생성 시 12주치(84일)를 한 번에 미리 생성하도록 수정
+    // 🚩 1. 템플릿 생성 시 7일치 생성 / 스케쥴러를 통해 매주 일요일 00시에 갱신
     public void createTemplate(String title, TemplateRuleType ruleType, DayOfWeek dayOfWeek,
                                LocalDate selectedDate) {
         // 1. 템플릿 저장
@@ -114,21 +114,24 @@ public class PlannerService {
     @Scheduled(cron = "0 0 0 * * sun")
     @Transactional
     public void generateWeeklyTasksFromTemplates() {
-        // 기존 findAll() 대신 활성화된(active) 템플릿만 가져오기
         List<Template> allTemplates = templateRepository.findAllByActiveTrue();
-        LocalDate sunday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+
+        // 1. 오늘이 포함된 주의 일요일을 찾습니다. (주의 시작점)
+        LocalDate thisSunday = LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.SUNDAY));
+
+        // 2. 🚩 핵심: 무조건 다음 주 일요일부터 시작하도록 7일을 더합니다.
+        // 이렇게 하면 월요일에 누르든 토요일에 누르든 항상 '다음 주 일요일'이 시작점이 됩니다.
+        LocalDate nextSunday = thisSunday.plusDays(7);
 
         List<Task> taskBasket = new ArrayList<>();
 
         for (Template template : allTemplates) {
             for (int i = 0; i < 7; i++) {
-                LocalDate targetDate = sunday.plusDays(i);
+                LocalDate targetDate = nextSunday.plusDays(i);
 
                 if (template.matches(targetDate)) {
-                    // 🚩 핵심: 이미 해당 날짜에 이 템플릿으로 만든 할 일이 있는지 검사!
                     boolean isExist = taskRepository.findByTemplateAndScheduledDate(template, targetDate).isPresent();
-
-                    if (!isExist) { // 🚩 없을 때만 바구니에 담기 (중복 충돌 완벽 방지)
+                    if (!isExist) {
                         taskBasket.add(new Task(template.getTitle(), targetDate, template));
                     }
                 }
@@ -137,4 +140,34 @@ public class PlannerService {
         taskRepository.saveAll(taskBasket);
     }
 
+    @Transactional(readOnly = true)
+    public List<Template> getAllTemplates() {
+        return templateRepository.findAll();
+    }
+    // 템플릿 삭제 (Template <-> Task 연관 관계 끊어서 DB에서 삭제 되는거 방지)
+    @Transactional
+    public void deleteTemplate(Long id) {
+        // 1. 삭제할 템플릿 존재 확인
+        Template template = templateRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 템플릿입니다. ID: " + id));
+
+        // 2. 핵심 로직: 이 템플릿으로 생성된 모든 할 일들과의 관계를 끊음
+        // 템플릿(설계도)이 삭제되어도 할 일(자산)은 남겨두기 위함입니다.
+        for (Task task : template.getTasks()) {
+            task.disconnectTemplate();
+        }
+
+        // 3. 관계가 다 끊어졌으므로 이제 안전하게 템플릿만 삭제
+        templateRepository.delete(template);
+    }
+
+    @Transactional
+    public void updateTemplate(Long id, String newTitle, TemplateRuleType newRuleType, DayOfWeek newDay) {
+        Template template = templateRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("존재하지 않는 템플릿입니다. ID: " + id));
+
+        // 🚩 템플릿의 정보만 변경합니다.
+        // 기존에 이미 생성된 Task들은 template_id를 null로 끊어놨거나 그대로 갖고 있으므로 영향받지 않습니다.
+        template.updateInfo(newTitle, newRuleType, newDay);
+    }
 }

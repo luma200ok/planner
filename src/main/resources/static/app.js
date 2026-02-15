@@ -45,8 +45,8 @@ function toggleDaySelect() {
 // API 호출 함수
 async function api(path, options = {}) {
     const url = path.startsWith("http") ? path : API_BASE + path;
-    const headers = { "Content-Type": "application/json", ...options.headers };
-    const res = await fetch(url, { ...options, headers });
+    const headers = {"Content-Type": "application/json", ...options.headers};
+    const res = await fetch(url, {...options, headers});
     if (!res.ok) {
         throw new Error(`API 호출 실패: ${res.status}`);
     }
@@ -142,14 +142,15 @@ function renderBoard(tasks) {
 
             item.innerHTML = `
                 <div class="task-content">
-                    <span class="task-title" style="${titleStyle}">
+                    <span class="task-title" style="${titleStyle}; cursor: pointer;" 
+                        onclick="editTask(${t.id}, '${t.title}')">
                         ${t.title}
                     </span>
                 </div>
-                <div class="task-btns" style="display:flex; gap:5px;">
-                    ${btnHtml}
-                </div>
-            `;
+    <div class="task-btns" style="display:flex; gap:5px;">
+        ${btnHtml}
+    </div>
+`;
             listEl.appendChild(item);
         });
     }
@@ -215,24 +216,24 @@ async function handleCreateTask() {
 
 // 기능: 완료, 스킵, 되돌리기, 삭제
 async function completeTask(id) {
-    await api(`/tasks/${id}/complete`, { method: "POST" });
+    await api(`/tasks/${id}/complete`, {method: "POST"});
     refresh();
 }
 
 async function skipTask(id) {
-    await api(`/tasks/${id}/skip`, { method: "POST" });
+    await api(`/tasks/${id}/skip`, {method: "POST"});
     refresh();
 }
 
 async function undoTask(id) {
     if (!confirm("상태를 초기화 하시겠습니까?")) return;
-    await api(`/tasks/${id}/undo`, { method: "POST" });
+    await api(`/tasks/${id}/undo`, {method: "POST"});
     refresh();
 }
 
 async function deleteTask(id) {
     if (!confirm("삭제하시겠습니까?")) return;
-    await api(`/tasks/${id}`, { method: "DELETE" });
+    await api(`/tasks/${id}`, {method: "DELETE"});
     refresh();
 }
 
@@ -256,9 +257,22 @@ document.addEventListener("DOMContentLoaded", () => {
             if (!confirm("마감하시겠습니까? (미완료 항목은 스킵 처리됩니다)")) return;
             await api("/day-close", {
                 method: "POST",
-                body: JSON.stringify({ date: fmtDate(new Date()), carryOver: false })
+                body: JSON.stringify({date: fmtDate(new Date()), carryOver: false})
             });
             refresh();
+        };
+    }
+
+    if ($("#runSchedulerBtn")) {
+        $("#runSchedulerBtn").onclick = async () => {
+            if (!confirm("지금 바로 다음 주 일정을 생성하시겠습니까? (중복 체크 포함)")) return;
+            try {
+                await api("/admin/run-scheduler", { method: "POST" });
+                alert("스케줄러가 성공적으로 실행되었습니다.");
+                refresh();
+            } catch (e) {
+                alert("실행 실패: " + e.message);
+            }
         };
     }
 
@@ -277,6 +291,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if ($("#openTemplateModal")) {
         $("#openTemplateModal").onclick = () => {
             modal.classList.remove("hidden");
+            loadTemplates(); // 🚩 여기에 이 한 줄을 추가!
         };
     }
 
@@ -337,5 +352,114 @@ async function createCustomTemplate() {
     } catch (e) {
         console.error(e);
         alert("템플릿 생성 중 오류가 발생했습니다.");
+    }
+}
+
+async function editTask(id, oldTitle) {
+    const newTitle = prompt("할 일 내용을 수정하시겠습니까?", oldTitle);
+
+    // 취소를 누르거나 빈값이면 무시
+    if (newTitle === null || newTitle.trim() === "" || newTitle === oldTitle) return;
+
+    try {
+        await api(`/tasks/${id}`, {
+            method: "PUT",
+            body: JSON.stringify({ title: newTitle.trim() })
+        });
+        refresh(); // 보드 새로고침
+    } catch (e) {
+        alert("수정 실패: " + e.message);
+    }
+}
+
+async function loadTemplates() {
+    try {
+        const res = await api("/templates");
+        const templates = await res.json();
+        const listEl = $("#templateList");
+        listEl.innerHTML = "";
+
+        if (templates.length === 0) {
+            listEl.innerHTML = `<div class="empty-msg">등록된 템플릿이 없습니다.</div>`;
+            return;
+        }
+
+        // 1. 이름(title) 기준으로 그룹화
+        const groups = templates.reduce((acc, t) => {
+            if (!acc[t.title]) acc[t.title] = {title: t.title, ids: [], days: [], ruleType: t.ruleType};
+            acc[t.title].ids.push(t.id);
+            if (t.dayOfWeek) acc[t.title].days.push(t.dayOfWeek);
+            return acc;
+        }, {});
+
+        // 2. 그룹별로 화면에 그리기
+        Object.values(groups).forEach(g => {
+            const item = document.createElement("div");
+            item.className = "list-item";
+            item.style = "display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding: 12px; border: 1px solid var(--line); border-radius: 8px;";
+
+            const dayMap = {
+                'MONDAY': '월',
+                'TUESDAY': '화',
+                'WEDNESDAY': '수',
+                'THURSDAY': '목',
+                'FRIDAY': '금',
+                'SATURDAY': '토',
+                'SUNDAY': '일'
+            };
+            // 요일 정렬 및 한글화
+            const sortedDays = g.days.sort((a, b) => {
+                const order = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+                return order.indexOf(a) - order.indexOf(b);
+            }).map(d => dayMap[d]).join(', ');
+
+            const dayInfo = sortedDays ? `(${sortedDays})` : "";
+
+            item.innerHTML = `
+                <div>
+                    <strong>${g.title}</strong> 
+                    <span style="font-size: 11px; color: var(--muted);">| ${g.ruleType} ${dayInfo}</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                    <button onclick="editTemplateGroup('${g.title}', [${g.ids}])" style="border:none; background:none; cursor:pointer; font-size: 16px;">✏️</button>
+                    <button onclick="deleteTemplateGroup([${g.ids}])" style="border:none; background:none; cursor:pointer; font-size: 16px;">🗑️</button>
+                </div>
+            `;
+            listEl.appendChild(item);
+        });
+    } catch (e) {
+        console.error("템플릿 로드 실패", e);
+    }
+}
+
+// 🚩 그룹 삭제 (여러 ID를 동시에 삭제)
+async function deleteTemplateGroup(ids) {
+    if (!confirm("이 템플릿 그룹을 모두 삭제하시겠습니까?")) return;
+    try {
+        // 모든 ID에 대해 병렬로 삭제 요청
+        await Promise.all(ids.map(id => api(`/templates/${id}`, {method: "DELETE"})));
+        loadTemplates();
+    } catch (e) {
+        alert("삭제 실패");
+    }
+}
+
+// 🚩 그룹 수정 (이름이 같은 모든 템플릿의 제목 변경)
+async function editTemplateGroup(oldTitle, ids) {
+    const newTitle = prompt("수정할 템플릿 이름을 입력하세요", oldTitle);
+    if (!newTitle || newTitle.trim() === "" || newTitle === oldTitle) return;
+
+    try {
+        // 같은 그룹의 모든 템플릿 제목을 한꺼번에 수정
+        await Promise.all(ids.map(id =>
+            api(`/templates/${id}`, {
+                method: "PUT",
+                body: JSON.stringify({title: newTitle.trim()})
+            })
+        ));
+        alert("성공적으로 수정되었습니다.");
+        loadTemplates();
+    } catch (e) {
+        alert("수정 실패");
     }
 }

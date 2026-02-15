@@ -6,11 +6,14 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -27,6 +30,10 @@ public class Template {
     private DayOfWeek dayOfWeek;
     private boolean active = true;
 
+    @OneToMany(mappedBy = "template")
+    private List<Task> tasks = new ArrayList<>();
+
+
     public boolean matches(LocalDate date) {
         return ruleType.matches(date, this.dayOfWeek); // Enum 내의 로직 활용
     }
@@ -38,4 +45,9 @@ public class Template {
         this.active = true; // 기본적으로 활성화 상태
     }
 
+    public void updateInfo(String title, TemplateRuleType ruleType, DayOfWeek dayOfWeek) {
+        this.title = title;
+        this.ruleType = ruleType;
+        this.dayOfWeek = dayOfWeek;
+    }
 }

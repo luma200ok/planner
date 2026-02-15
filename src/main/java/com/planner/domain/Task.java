@@ -65,4 +65,9 @@ public class Task {
     }
 
     private boolean deleted = false; // 🚩 삭제 여부 플래그 final x
+
+    // 연관 관계 끊기
+    public void disconnectTemplate() {
+        this.template = null;
+    }
 }

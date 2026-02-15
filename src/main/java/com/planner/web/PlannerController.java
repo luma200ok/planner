@@ -41,6 +41,9 @@ public class PlannerController {
             DayOfWeek dayOfWeek,
             LocalDate date // 🚩 프론트엔드의 "2026-02-19"가 이 필드로 들어옵니다.
     ) {}
+    public record TemplateResponse(Long id, String title, TemplateRuleType ruleType,
+                                   java.time.DayOfWeek dayOfWeek, boolean active) {}
+    public record TemplateUpdateRequest(String title, TemplateRuleType ruleType, DayOfWeek dayOfWeek) {}
 
     @PostMapping("/tasks")
     public TaskResponse create(@RequestBody CreateRequest req) {
@@ -66,6 +69,7 @@ public class PlannerController {
                 .map(t -> new TaskResponse(t.getId(), t.getTitle(), t.getStatus(), t.getScheduledDate()))
                 .toList();
     }
+
     @DeleteMapping("/tasks/{id}")
     public void delete(@PathVariable Long id) {
         plannerService.deleteTask(id);
@@ -102,4 +106,29 @@ public class PlannerController {
         );
         return ResponseEntity.ok().build();
     }
+
+    @GetMapping("/templates")
+    public List<TemplateResponse> getTemplates() {
+        return plannerService.getAllTemplates().stream()
+                .map(t -> new TemplateResponse(t.getId(), t.getTitle(), t.getRuleType(), t.getDayOfWeek(), t.isActive()))
+                .toList();
+    }
+
+    @DeleteMapping("/templates/{id}")
+    public void deleteTemplate(@PathVariable Long id) {
+        plannerService.deleteTemplate(id);
+    }
+
+    @PutMapping("/templates/{id}")
+    public void updateTemplate(@PathVariable Long id, @RequestBody TemplateUpdateRequest req) {
+        plannerService.updateTemplate(id, req.title(), req.ruleType(), req.dayOfWeek());
+    }
+
+    // Scheduler 수동 실행
+    @PostMapping("/admin/run-scheduler")
+    public ResponseEntity<Void> runSchedulerManual() {
+        plannerService.generateWeeklyTasksFromTemplates();
+        return ResponseEntity.ok().build();
+    }
+
 }

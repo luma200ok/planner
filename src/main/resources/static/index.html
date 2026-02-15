@@ -71,7 +71,9 @@
         <h2 class="h2" style="color: var(--warn);">운영 도구</h2>
         <div class="card" style="border: 1px solid var(--warn);">
             <button id="dayCloseBtn" class="btn warn" style="width: 100%;">오늘 하루 마감하기</button>
+            <button id="runSchedulerBtn" class="btn primary" style="width: 100%;">주간 일정 강제 생성 (배치)</button>
         </div>
+
 
     </section>
 
@@ -86,6 +88,7 @@
         </div>
         <div class="card">
             <h3>커스텀 템플릿 생성</h3>
+
             <input id="newTemplateName" class="input" placeholder="이름 (예: 헬스장 가기)"/>
 
             <div style="margin-top:15px;">
@@ -101,6 +104,11 @@
                 </div>
 
                 <button id="btnCreateTemplate" class="btn primary" style="width: 100%;">선택한 요일로 템플릿 생성</button>
+            </div>
+            <div class="card">
+                <h3>나의 템플릿 목록</h3>
+                <div id="templateList" class="list">
+                </div>
             </div>
         </div>
     </div>
