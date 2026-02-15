@@ -39,26 +39,6 @@ jobs:
             username: ec2-user
             key: ${{ secrets.EC2_SSH_KEY }}
             script: |
-              # 1. 환경 변수 파일 로드 (비밀번호 등)
-              if [ -f /home/ec2-user/apps/planner-new/env.sh ]; then
-                source /home/ec2-user/apps/planner-new/env.sh
-              fi
-              
-              # 2. 기존 8081 포트 프로세스 종료
               sudo fuser -k 8081/tcp || true
-              
-              # 3. 배포 폴더로 이동
-              cd /home/ec2-user/apps/planner-new
-              
-              # 4. 기존 실행 로그 백업
-              mv planner.log planner.log.bak || true
-              
-              # 5. 새 JAR 파일 실행 (Prod 설정 및 DB 비밀번호 적용)
-              # --spring.profiles.active=prod: prod 설정 사용
-              # --spring.datasource.password: env.sh에서 읽어온 변수 적용
-              # --spring.jpa.hibernate.ddl-auto=update: 테이블 자동 생성 실행
-              nohup java -jar *-SNAPSHOT.jar \
-                --spring.profiles.active=prod \
-                --spring.datasource.password=$DB_PASSWORD \
-                --spring.jpa.hibernate.ddl-auto=validate \
-                > planner.log 2>&1
+              nohup java -jar ~/planner/todeploy/build/libs/*.jar > ~/planner/app.log 2>&1 &
+              sleep 2
