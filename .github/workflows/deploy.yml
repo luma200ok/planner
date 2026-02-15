@@ -30,16 +30,16 @@ jobs:
           source: "build/libs/*-SNAPSHOT.jar" # -plain.jar는 제외하고 가져옵니다.
           # 지정하신 신규 경로로 전송합니다.
           target: "/home/ec2-user/apps/planner-new"
-          strip_components: 2
 
       - name: Execute Remote SSH
         uses: appleboy/ssh-action@master
         with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ec2-user
-            key: ${{ secrets.EC2_SSH_KEY }}
-            script: |
-              sudo fuser -k 8081/tcp || true
-              cd ~/planner/todeploy/build/libs
-              nohup java -jar *.jar --server.port=8081 > ~/planner/app.log 2>&1 &
-              sleep 5
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          # ✨ 수정된 부분: cd 이동 후 실제 존재하는 JAR 파일명과 로그 파일명 매칭
+          script: |
+            sudo fuser -k 8081/tcp || true
+            cd /home/ec2-user/apps/planner-new
+            nohup java -jar build/libs/*.jar > planner.log 2>&1 &
+            sleep 5
