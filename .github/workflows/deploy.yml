@@ -28,7 +28,7 @@ jobs:
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
           source: "build/libs/*.jar"
-          target: "~/planner/todeploy" # 서버 내 저장할 위치입니다.
+          target: "/home/ec2-user/planner/todeploy" # 서버 내 저장할 위치입니다.
 
       - name: Execute Remote SSH
         uses: appleboy/ssh-action@master # 서버에 접속해 명령어를 실행합니다.
@@ -40,4 +40,4 @@ jobs:
             # 기존에 실행 중인 서버(8081 포트)를 찾아 종료합니다.
             sudo fuser -k 8081/tcp || true
             # 새 파일을 실행하고 로그를 기록합니다.
-            nohup java -jar ~/planner/todeploy/build/libs/*.jar > ~/planner/app.log 2>&1 &
+            nohup java -jar ~/planner/todeploy/build/libs/*.jar > ~/planner/app.log 2>&1
