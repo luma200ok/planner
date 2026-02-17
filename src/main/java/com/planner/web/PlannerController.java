@@ -2,7 +2,6 @@ package com.planner.web;
 
 import com.planner.application.PlannerService;
 import com.planner.domain.TaskStatus;
-import com.planner.domain.TemplateRuleType;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
@@ -17,9 +16,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.util.List;
+
+import static com.planner.dto.SchedulerDto.CloseRequest;
+import static com.planner.dto.TaskDto.CreateRequest;
+import static com.planner.dto.TaskDto.TaskResponse;
+import static com.planner.dto.TaskDto.UpdateRequest;
+import static com.planner.dto.TemplateDto.TemplateCreateRequest;
+import static com.planner.dto.TemplateDto.TemplateResponse;
+import static com.planner.dto.TemplateDto.TemplateUpdateRequest;
 
 @RestController
 @RequestMapping("/api/v1/planner")
@@ -29,21 +35,6 @@ public class PlannerController {
 
     private final PlannerService plannerService;
 
-//    public record TemplateRequest(String title, TemplateRuleType ruleType, DayOfWeek dayOfWeek,LocalDate selectedDate) {}
-    public record TaskResponse(Long id, String title, TaskStatus status, LocalDate date) {}
-    public record CloseRequest(LocalDate date, boolean carryOver) {}
-
-    public record CreateRequest(String title, LocalDate date) {}
-    public record UpdateRequest(String title) {}
-    public record TemplateCreateRequest(
-            String title,
-            TemplateRuleType ruleType,
-            DayOfWeek dayOfWeek,
-            LocalDate date // 🚩 프론트엔드의 "2026-02-19"가 이 필드로 들어옵니다.
-    ) {}
-    public record TemplateResponse(Long id, String title, TemplateRuleType ruleType,
-                                   java.time.DayOfWeek dayOfWeek, boolean active) {}
-    public record TemplateUpdateRequest(String title, TemplateRuleType ruleType, DayOfWeek dayOfWeek) {}
 
     @PostMapping("/tasks")
     public TaskResponse create(@RequestBody CreateRequest req) {
