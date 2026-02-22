@@ -10,4 +10,5 @@ public class TaskDto {
     public record UpdateRequest(String title) {}
 
     public record TaskResponse(Long id, String title, TaskStatus status, LocalDate date) {}
+
 }

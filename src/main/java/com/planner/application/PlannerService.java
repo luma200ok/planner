@@ -153,9 +153,7 @@ public class PlannerService {
 
         // 2. 핵심 로직: 이 템플릿으로 생성된 모든 할 일들과의 관계를 끊음
         // 템플릿(설계도)이 삭제되어도 할 일(자산)은 남겨두기 위함입니다.
-        for (Task task : template.getTasks()) {
-            task.disconnectTemplate();
-        }
+        template.disconnectTasks();
 
         // 3. 관계가 다 끊어졌으므로 이제 안전하게 템플릿만 삭제
         templateRepository.delete(template);

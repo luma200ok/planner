@@ -68,6 +68,10 @@ public class Task {
 
     // 연관 관계 끊기
     public void disconnectTemplate() {
+        // ✨ 수정된 부분: 연결을 끊기 전에 Template의 리스트에서도 나를 제거
+        if (this.template != null) {
+            this.template.getTasks().remove(this);
+        }
         this.template = null;
     }
 }

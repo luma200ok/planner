@@ -6,7 +6,6 @@ import java.time.DayOfWeek;
 import java.time.LocalDate;
 
 public class TemplateDto {
-
     public record TemplateCreateRequest(
             String title,
             TemplateRuleType ruleType,

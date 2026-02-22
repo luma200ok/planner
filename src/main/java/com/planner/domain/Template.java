@@ -50,4 +50,11 @@ public class Template {
         this.ruleType = ruleType;
         this.dayOfWeek = dayOfWeek;
     }
+
+    public void disconnectTasks() {
+        // ✨ 연관관계 편의 메서드를 활용해 리스트를 순회하며 관계를 끊음
+        for (Task task : new ArrayList<>(tasks)) {
+            task.disconnectTemplate(); // Task 내부의 편의 메서드가 상대방 리스트에서도 나를 지워줌
+        }
+    }
 }
