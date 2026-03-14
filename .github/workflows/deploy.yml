@@ -39,7 +39,7 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }}
           # ✨ 수정된 부분: cd 이동 후 실제 존재하는 JAR 파일명과 로그 파일명 매칭
           script: |
-            sudo fuser -k 8081/tcp || true
+            sudo fuser -k 8082/tcp || true
             cd /home/ec2-user/apps/planner-new
             nohup java -jar build/libs/*.jar > planner.log 2>&1 &
             sleep 5
