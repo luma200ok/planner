@@ -13,8 +13,8 @@
 ## 🔗 Live Demo & API Docs
 운영 중인 서버의 실시간 API 명세서를 바로 확인하실 수 있습니다.
 
-* **Swagger UI**: [http://rkqkdrnportfolio.shop:8081/swagger-ui/index.html](http://rkqkdrnportfolio.shop:8081/swagger-ui/index.html)
-* **Production Base URL**: [http://rkqkdrnportfolio.shop:8081](http://rkqkdrnportfolio.shop:8081)
+* **Production Base URL**: [http://rkqkdrnportfolio.shop:8082](http://rkqkdrnportfolio.shop:8082)
+* **Swagger UI**: [http://rkqkdrnportfolio.shop:8082/swagger-ui/index.html](http://rkqkdrnportfolio.shop:8082/swagger-ui/index.html)
 
 ---
 
@@ -95,4 +95,4 @@
 
 ---
 
-최근 업데이트: 2026.02.22 - README 최종 수정
+최근 업데이트: 2026.03.14 - README 최종 수정
