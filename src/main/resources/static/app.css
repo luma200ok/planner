@@ -1,8 +1,20 @@
 /* 1. 다크 모드 색상 정의 */
 :root {
-    /* 폰트: 화면 너비에 따라 13px ~ 15px 사이에서 실시간 자동 조절 */
+    /* 🎨 누락되었던 버튼 및 UI 색상 추가 */
+    --bg-main: #11121F;
+    --bg-card: #1C1D2E;
+    --bg-panel: #1C1D2E;
+    --border: #2F3045;
+    --text-main: #EAEAEA;
+    --text-sub: #8B8C9E;
+    --text-muted: #5d5e6b;
+
+    --primary: #5C7CFA; /* ✨ 이 부분이 추가하기 버튼의 메인 파란색입니다! */
+    --success: #4CAF50; /* 완료 상태 초록색 */
+    --warn: #E05D5D;    /* 마감/경고 빨간색 */
+
+    /* 폰트/여백 설정 (기존 유지) */
     --font-main: clamp(13px, 1.1vw, 15px);
-    /* 여백: 화면 너비에 따라 8px ~ 16px 사이에서 실시간 자동 조절 */
     --pad-base: clamp(8px, 1.2vw, 16px);
 }
 
@@ -349,6 +361,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     .panel {
         /* position: static 삭제 -> Drawer 유지를 위해 위쪽(1024px) 설정을 따름 */
         position: fixed;
+    }
+}
+
+/* ✨ 모바일/태블릿 화면 UI 찌그러짐 방지용 코드 추가 */
+@media (max-width: 1024px) {
+    /* 모바일에서는 각 요일 컬럼이 최소 260px의 너비를 가지도록 보장 */
+    .column {
+        min-width: 260px !important;
+        width: 260px !important;
+    }
+
+    /* 모바일에서 보드 영역 여백 최소화 */
+    #board {
+        padding: 10px !important;
     }
 }
 

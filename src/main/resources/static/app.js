@@ -78,15 +78,15 @@ function renderBoard(tasks) {
             if (isDone || isSkipped) {
                 // 완료/스킵 상태 -> 되돌리기(undo), 삭제(delete)
                 buttonsHtml = `
-                    <button class="btn-pill" ${stopProp} undoTask(${t.id})">undo</button>
-                    <button class="btn-pill" ${stopProp} deleteTask(${t.id})">delete</button>
+                    <button class="btn-pill" onclick="event.stopPropagation(); undoTask(${t.id})">undo</button>
+                    <button class="btn-pill" onclick="event.stopPropagation(); deleteTask(${t.id})">delete</button>
                 `;
             } else {
                 // 예정 상태 -> 완료(complete), 스킵(skip), 삭제(delete)
                 buttonsHtml = `
-                    <button class="btn-pill" ${stopProp} completeTask(${t.id})">complete</button>
-                    <button class="btn-pill" ${stopProp} skipTask(${t.id})">skip</button>
-                    <button class="btn-pill" ${stopProp} deleteTask(${t.id})">delete</button>
+                    <button class="btn-pill" onclick="event.stopPropagation(); completeTask(${t.id})">complete</button>
+                    <button class="btn-pill" onclick="event.stopPropagation(); skipTask(${t.id})">skip</button>
+                    <button class="btn-pill" onclick="event.stopPropagation(); deleteTask(${t.id})">delete</button>
                 `;
             }
 
