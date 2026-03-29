@@ -2,7 +2,7 @@
 const isLocal = window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1";
 const API_BASE = isLocal
     ? "http://localhost:8082/api/v1/planner"
-    : "http://rkqkdrnportfolio.shop:8082/api/v1/planner";
+    : "http://planner.rkqkdrnportfolio.shop/api/v1/planner";
 
 const $ = (s) => document.querySelector(s);
 
