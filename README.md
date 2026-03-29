@@ -13,8 +13,8 @@
 ## 🔗 Live Demo & API Docs
 운영 중인 서버의 실시간 API 명세서를 바로 확인하실 수 있습니다.
 
-* **Production Base URL**: [http://rkqkdrnportfolio.shop:8082](http://rkqkdrnportfolio.shop:8082)
-* **Swagger UI**: [http://rkqkdrnportfolio.shop:8082/swagger-ui/index.html](http://rkqkdrnportfolio.shop:8082/swagger-ui/index.html)
+* **Production Base URL**: [http://rkqkdrnportfolio.shop:8089](http://rkqkdrnportfolio.shop:8089)
+* **Swagger UI**: [http://rkqkdrnportfolio.shop:8089/swagger-ui/index.html](http://rkqkdrnportfolio.shop:8089/swagger-ui/index.html)
 
 ---
 
