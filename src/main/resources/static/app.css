@@ -25,6 +25,9 @@ html, body { height: 100%; margin: 0; padding: 0; }
 
 body {
     font-size: var(--font-main);
+    background-color: var(--bg-main);
+    color: var(--text-main);
+    font-family: 'Pretendard', sans-serif;
 }
 
 /* 상단 헤더 */
