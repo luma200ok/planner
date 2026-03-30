@@ -246,7 +246,121 @@ input[type="date"]::-webkit-calendar-picker-indicator {
     background: rgba(255,255,255,0.05);
 }
 
-/* 5. 모달 및 유틸 */
+/* 5. 태스크 카드 기본 구조 (index.html 인라인 스타일 통합) */
+.task-card {
+    background-color: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* 6. 버튼 색상 변형 */
+.btn.ghost {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--text-sub);
+}
+.btn.ghost:hover { border-color: var(--text-main); color: var(--text-main); }
+
+.btn-pill.btn-complete { border-color: var(--success); color: var(--success); }
+.btn-pill.btn-complete:hover { background: rgba(76, 175, 80, 0.1); }
+.btn-pill.btn-skip { border-color: var(--text-sub); color: var(--text-sub); }
+.btn-pill.btn-danger { border-color: var(--warn); color: var(--warn); }
+.btn-pill.btn-danger:hover { background: rgba(224, 93, 93, 0.1); }
+.btn-pill.btn-confirm { border-color: var(--warn); color: var(--warn); }
+
+/* 7. 인라인 편집 입력 */
+.card-title-input {
+    width: 100%;
+    background: var(--bg-main);
+    border: 1px solid var(--primary);
+    color: var(--text-main);
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 600;
+}
+.template-edit-input {
+    width: 100%;
+    background: var(--bg-main);
+    border: 1px solid var(--primary);
+    color: var(--text-main);
+    padding: 3px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+}
+
+/* 8. 인라인 삭제 확인 */
+.confirm-text { font-size: 11px; color: var(--warn); line-height: 1.8; }
+
+/* 9. 오늘 날짜 하이라이트 */
+.column-header.today { background: rgba(92, 124, 250, 0.08); border-bottom-color: var(--primary); }
+.today-badge {
+    display: inline-block;
+    font-size: 9px;
+    background: var(--primary);
+    color: white;
+    padding: 2px 5px;
+    border-radius: 8px;
+    font-weight: 700;
+    margin-left: 4px;
+}
+
+/* 10. 로딩 상태 */
+#board.loading { opacity: 0.5; pointer-events: none; }
+
+/* 11. 토스트 알림 */
+#toast-container {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    z-index: 9999;
+}
+.toast {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    color: var(--text-main);
+    padding: 10px 16px;
+    border-radius: 8px;
+    font-size: 13px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    opacity: 0;
+    transform: translateY(8px);
+    transition: opacity 0.25s, transform 0.25s;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+.toast.toast-success { border-color: var(--success); color: var(--success); }
+.toast.toast-error { border-color: var(--warn); color: var(--warn); }
+
+/* 12. 관리 버튼 인라인 확인 상태 */
+.btn.confirming { background: rgba(224, 93, 93, 0.1) !important; border: 1px solid var(--warn) !important; color: var(--text-main) !important; }
+.confirm-yes { color: var(--warn); cursor: pointer; font-weight: bold; margin-left: 6px; }
+.confirm-no { color: var(--text-sub); cursor: pointer; margin-left: 4px; }
+
+/* 13. 템플릿 목록 */
+.template-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+}
+.template-item:last-child { border-bottom: none; }
+.template-info { display: flex; flex-direction: column; gap: 3px; }
+.template-title { font-size: 13px; color: var(--text-main); cursor: pointer; }
+.template-title:hover { color: var(--primary); }
+.template-days { font-size: 11px; color: var(--text-sub); }
+.template-btns { display: flex; gap: 6px; flex-shrink: 0; }
+.empty-msg { font-size: 12px; color: var(--text-sub); text-align: center; padding: 16px 0; }
+
+/* 14. 모달 및 유틸 */
 .modal-backdrop {
     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
     background: rgba(0,0,0,0.7);
