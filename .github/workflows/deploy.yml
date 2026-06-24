@@ -1,48 +1,67 @@
-name: Deploy to EC2
+name: Planner Server CI/CD
+
+# OCI(A, oci-arm1) 배포 — systemd 서비스 방식
+# 시크릿은 서버의 /etc/app-secrets/planner.env 에 보관.
+
 on:
   push:
-    branches: [ main ] # main 브랜치 푸시 시 실행
+    branches: [ "main" ]
+    paths:
+      - 'src/**'
+      - 'build.gradle'
+      - 'settings.gradle'
+      - 'gradle/**'
+      - '.github/workflows/deploy.yml'
+  workflow_dispatch:
 
 jobs:
-  deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v3
+      - name: 1. 코드 체크아웃
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v3
+      - name: 2. JDK 21
+        uses: actions/setup-java@v4
         with:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Build with Gradle
+      - name: 3. 빌드 (테스트 제외)
         run: |
           chmod +x gradlew
-          ./gradlew clean build -x test
+          ./gradlew bootJar -x test
 
-      - name: Copy JAR to EC2
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.EC2_HOST }}
-          username: ec2-user
-          key: ${{ secrets.EC2_SSH_KEY }}
-          source: "build/libs/*-SNAPSHOT.jar" # -plain.jar는 제외하고 가져옵니다.
-          # 지정하신 신규 경로로 전송합니다.
-          target: "/home/ec2-user/apps/planner-new"
-
-      - name: Execute Remote SSH
-        uses: appleboy/ssh-action@master
-        env:
-          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+      - name: 4. jar 업로드 (staging)
+        uses: appleboy/scp-action@v0.1.7
         with:
           host: ${{ secrets.EC2_HOST }}
           username: ${{ secrets.EC2_USERNAME }}
           key: ${{ secrets.EC2_SSH_KEY }}
-          # ✨ 수정된 부분: cd 이동 후 실제 존재하는 JAR 파일명과 로그 파일명 매칭
-          envs: DB_PASSWORD
+          source: "build/libs/*SNAPSHOT.jar"
+          target: "/home/opc/apps/planner/staging"
+          strip_components: 2
+          rm: true
+
+      - name: 5. 배포 + 재시작 + 헬스체크
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
           script: |
-            sudo fuser -k 8089/tcp || true
-            cd /home/ec2-user/apps/planner-new
-            nohup java -jar build/libs/*.jar --spring.profiles.active=prod > planner.log 2>&1 &
-            sleep 5
+            set -e
+            APP=planner; PORT=8089
+            JAR=$(ls /home/opc/apps/$APP/staging/*.jar | grep -v plain | head -1)
+            echo "> 배포 jar: $JAR"
+            cp "$JAR" /home/opc/apps/$APP/$APP.jar
+            rm -rf /home/opc/apps/$APP/staging
+            sudo systemctl restart $APP
+            echo "> 재시작, 헬스체크..."
+            for i in $(seq 1 12); do
+              sleep 5
+              CODE=$(curl -s -o /dev/null -w "%{http_code}" http://127.0.0.1:$PORT/ 2>/dev/null || echo 000)
+              if [ "$CODE" != "000" ]; then echo "> ✅ $APP 정상 (HTTP $CODE)"; exit 0; fi
+              echo "> 시도 $i/12 (HTTP $CODE)..."
+            done
+            echo "> ❌ $APP 기동 실패"; sudo journalctl -u $APP -n 40 --no-pager; exit 1
