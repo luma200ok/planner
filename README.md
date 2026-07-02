@@ -13,8 +13,8 @@
 ## 🔗 Live Demo & API Docs
 운영 중인 서버의 실시간 API 명세서를 바로 확인하실 수 있습니다.
 
-* **Production Base URL**: [http://planner.rkqkdrnportfolio.shop](http://planner.rkqkdrnportfolio.shop)
-* **Swagger UI**: [http://planner.rkqkdrnportfolio.shop/swagger-ui/index.html](http://planner.rkqkdrnportfolio.shop/swagger-ui/index.html)
+* **Production Base URL**: [http://planner.luma200ok.com](http://planner.luma200ok.com)
+* **Swagger UI**: [http://planner.luma200ok.com/swagger-ui/index.html](http://planner.luma200ok.com/swagger-ui/index.html)
 
 ---
 
